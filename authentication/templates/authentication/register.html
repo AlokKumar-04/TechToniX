@@ -1,0 +1,162 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Register - Event Registration{% endblock %}
+
+{% block content %}
+<div class="register-header text-center py-5" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{% static 'images/hero-bg.jpg' %}') no-repeat center center; background-size: cover;">
+    <h1 class="display-4 fw-bold text-white">Join the Experience</h1>
+    <p class="lead text-white">Sign up to create or attend unforgettable events.</p>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center align-items-center mt-5" style="min-height: calc(100vh - 300px);">
+        <div class="col-lg-5 col-md-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4 p-sm-5">
+                    <div class="text-center mb-4">
+                        <h3 class="card-title mb-2 fw-bold">Create Account</h3>
+                        <p class="text-muted">Join our event community</p>
+                    </div>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form id="registrationForm" method="post" onsubmit="return validateForm()">
+                        {% csrf_token %}
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                            <label for="username">Username</label>
+                            <small class="text-danger d-none" id="usernameError">Username must be at least 4 characters.</small>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required>
+                            <label for="email">Email Address</label>
+                            <small class="text-danger d-none" id="emailError">Invalid email format.</small>
+                        </div>
+
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                            <label for="password">Password</label>
+                            <i class="bi bi-eye-slash password-toggle position-absolute end-0 top-50 translate-middle-y me-3"
+                               onclick="togglePassword('password')" style="cursor: pointer;"></i>
+                            <small class="text-danger d-none" id="passwordError">Password must be at least 6 characters long, include a number and a special character.</small>
+                        </div>
+
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="password" class="form-control" id="password2" name="password2" placeholder="Confirm Password" required>
+                            <label for="password2">Confirm Password</label>
+                            <i class="bi bi-eye-slash password-toggle position-absolute end-0 top-50 translate-middle-y me-3"
+                               onclick="togglePassword('password2')" style="cursor: pointer;"></i>
+                            <small class="text-danger d-none" id="passwordMatchError">Passwords do not match.</small>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="role" name="role">
+                                <option value="attendee" selected>Event Attendee</option>
+                                <option value="organizer">Event Organizer</option>
+                            </select>
+                            <label for="role">Role</label>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                            <label class="form-check-label small" for="terms">
+                                I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                            </label>
+                            <small class="text-danger d-none" id="termsError">You must agree to the terms.</small>
+                        </div>
+
+                        <button class="btn btn-primary w-100 py-2" type="submit">Create Account</button>
+
+                        <div class="text-center mt-4">
+                            <p class="small text-muted">
+                                Already have an account?
+                                <a href="{% url 'authentication:SignIn' %}" class="text-primary text-decoration-none">Sign in here</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword(inputId) {
+        const passwordInput = document.getElementById(inputId);
+        const toggleIcon = document.querySelector(`[onclick="togglePassword('${inputId}')"]`);
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleIcon.classList.remove("bi-eye-slash");
+            toggleIcon.classList.add("bi-eye");
+        } else {
+            passwordInput.type = "password";
+            toggleIcon.classList.remove("bi-eye");
+            toggleIcon.classList.add("bi-eye-slash");
+        }
+    }
+
+    function validateForm() {
+        let isValid = true;
+
+        // Username validation
+        const username = document.getElementById("username").value.trim();
+        if (username.length < 4) {
+            document.getElementById("usernameError").classList.remove("d-none");
+            isValid = false;
+        } else {
+            document.getElementById("usernameError").classList.add("d-none");
+        }
+
+        // Email validation (regex check)
+        const email = document.getElementById("email").value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            document.getElementById("emailError").classList.remove("d-none");
+            isValid = false;
+        } else {
+            document.getElementById("emailError").classList.add("d-none");
+        }
+
+        // Password validation (at least 6 characters, 1 number, 1 special char)
+        const password = document.getElementById("password").value;
+        const passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{6,}$/;
+        if (!passwordRegex.test(password)) {
+            document.getElementById("passwordError").classList.remove("d-none");
+            isValid = false;
+        } else {
+            document.getElementById("passwordError").classList.add("d-none");
+        }
+
+        // Confirm password validation
+        const password2 = document.getElementById("password2").value;
+        if (password !== password2) {
+            document.getElementById("passwordMatchError").classList.remove("d-none");
+            isValid = false;
+        } else {
+            document.getElementById("passwordMatchError").classList.add("d-none");
+        }
+
+        // Terms checkbox validation
+        if (!document.getElementById("terms").checked) {
+            document.getElementById("termsError").classList.remove("d-none");
+            isValid = false;
+        } else {
+            document.getElementById("termsError").classList.add("d-none");
+        }
+
+        return isValid;
+    }
+</script>
+
+{% endblock %}

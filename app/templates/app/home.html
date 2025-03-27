@@ -1,0 +1,99 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Home - TechToniX{% endblock %}
+
+{% block content %}
+
+<div class="hero-section position-relative text-white text-center d-flex align-items-center"
+     style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)),
+                    url('{% static 'images/events.jpg' %}') center/cover no-repeat; min-height: 70vh;">
+    <div class="container">
+        <h1 class="display-3 fw-bold animate__animated animate__fadeInDown">Discover and Join Exciting Tech Events</h1>
+        <p class="lead my-4 animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
+            Explore a wide range of tech conferences, workshops, meetups, and more. Find the perfect event to expand your knowledge and network.
+        </p>
+        <div class="mt-5 d-flex flex-wrap justify-content-center gap-3 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+            <a href="#events" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">Explore Events</a>
+            <a href="{% url 'authentication:register' %}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill">Register for Free</a>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'authentication:SignIn' %}" class="btn btn-light btn-lg px-5 py-3 rounded-pill">Log In</a>
+            {% endif %}
+        </div>
+        <div class="position-absolute bottom-0 start-0 end-0 py-3" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+            <a href="#features" class="text-white-50"><i class="bi bi-chevron-down fs-4"></i> Learn More Below</a>
+        </div>
+    </div>
+</div>
+
+<section id="features" class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5 fw-bold">Why Join TechToniX?</h2>
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="feature-box p-4 rounded bg-white shadow-sm h-100">
+                    <i class="bi bi-calendar-event fs-2 text-primary mb-3"></i>
+                    <h5 class="fw-bold">Discover Diverse Events</h5>
+                    <p class="text-muted">Find events across various tech domains, from coding workshops to industry conferences.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="feature-box p-4 rounded bg-white shadow-sm h-100">
+                    <i class="bi bi-people fs-2 text-success mb-3"></i>
+                    <h5 class="fw-bold">Connect with Professionals</h5>
+                    <p class="text-muted">Network with like-minded individuals, industry experts, and potential collaborators.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="feature-box p-4 rounded bg-white shadow-sm h-100">
+                    <i class="bi bi-lightning-charge fs-2 text-warning mb-3"></i>
+                    <h5 class="fw-bold">Stay Updated & Learn</h5>
+                    <p class="text-muted">Keep pace with the latest tech trends and expand your skillset through engaging events.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="events" class="container py-5">
+    <h2 class="text-center mb-5 fw-bold">Explore Our Upcoming Events</h2>
+    <div class="row g-4">
+        {% for event in events %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card event-card h-100 shadow-sm border-0">
+                {% if event.event_image %}
+                <img src="{{ event.event_image.url }}" class="card-img-top img-fluid" alt="{{ event.name }}" loading="lazy" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <img src="{% static 'images/events.jpg' %}" class="card-img-top img-fluid" alt="Default Event Image" loading="lazy" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold">{{ event.name }}</h5>
+                    <p class="card-text text-muted"><i class="bi bi-calendar-event me-1"></i> {{ event.date|date:"F j, Y" }} at {{ event.date|time:"g:i A" }}</p>
+                    <p class="card-text text-muted"><i class="bi bi-geo-alt me-1"></i> {{ event.location }}</p>
+                    <p class="card-text flex-grow-1">{{ event.description|truncatewords:20 }}</p>
+                    <a href="#" class="btn btn-primary mt-auto rounded-pill" aria-label="Learn more about {{ event.name }}">Learn More</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="lead">No upcoming events at the moment. Please check back later!</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% if events|length > 6 %}
+    <div class="text-center mt-4">
+        <a href="{% url 'event:list' %}" class="btn btn-outline-primary rounded-pill">View All Events</a>
+    </div>
+    {% endif %}
+</section>
+
+<section class="bg-primary py-5 text-white text-center">
+    <div class="container">
+        <h2 class="fw-bold mb-3">Ready to Dive In?</h2>
+        <p class="lead mb-4">Register now and start exploring the exciting world of tech events on TechToniX!</p>
+        <a href="{% url 'authentication:register' %}" class="btn btn-light btn-lg px-5 py-3 rounded-pill">Join TechToniX Today</a>
+    </div>
+</section>
+
+{% endblock %}

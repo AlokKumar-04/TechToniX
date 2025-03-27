@@ -1,0 +1,49 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Upcoming Events{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Upcoming Events</h2>
+
+    <div class="mb-3">
+        <strong>Filter by Category:</strong>
+        <a href="{% url 'event:event_list' %}" class="btn btn-outline-secondary btn-sm {% if not current_category %}active{% endif %}">All</a>
+        {% for category in categories %}
+            <a href="{% url 'event:event_category_list' category.id %}" class="btn btn-outline-secondary btn-sm {% if current_category and current_category.id == category.id %}active{% endif %}">{{ category.name }}</a>
+        {% endfor %}
+    </div>
+
+    {% if events %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for event in events %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if event.event_image %}
+                            <img src="{{ event.event_image.url }}" class="card-img-top" alt="{{ event.name }}">
+                        {% else %}
+                            <img src="{% static 'images/default_event.png' %}" class="card-img-top" alt="Default Event Image">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ event.name }}</h5>
+                            <p class="card-text">{{ event.description|truncatechars:100 }}</p>
+                            <p class="card-text"><small class="text-muted">Date: {{ event.date }}</small></p>
+                            <p class="card-text"><small class="text-muted">Location: {{ event.location }}</small></p>
+                            <a href="{% url 'event:event_detail' event.id %}" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No approved events found.</p>
+    {% endif %}
+
+    {% if request.user.is_authenticated %}
+        <div class="mt-4">
+            <a href="{% url 'event:event_create' %}" class="btn btn-success">Create New Event</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

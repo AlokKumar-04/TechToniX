@@ -1,0 +1,135 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Login - Event Registration{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="login-header text-center py-5" style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{% static 'images/hero-bg.jpg' %}') no-repeat center center; background-size: cover;">
+    <h1 class="display-4 fw-bold text-white">Welcome Back</h1>
+    <p class="lead text-white">Log in to manage your events or join the experience.</p>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center min-vh-100 align-items-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4 p-sm-5">
+                    <div class="text-center mb-4">
+                        <h3 class="card-title mb-2 fw-bold">Welcome Back</h3>
+                        <p class="text-muted">Sign in to continue</p>
+                    </div>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form id="loginForm" method="POST" action="{% url 'authentication:SignIn' %}" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Email -->
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="loginEmail" name="username" placeholder="name@example.com" required autocomplete="username"/>
+                            <label for="loginEmail">Email address</label>
+                            <small class="text-danger d-none" id="emailError">Invalid email format.</small>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Password" required autocomplete="current-password"/>
+                            <label for="loginPassword">Password</label>
+                            <i class="bi bi-eye-slash password-toggle position-absolute end-0 top-50 translate-middle-y me-3"
+                               onclick="togglePassword('loginPassword')" style="cursor: pointer;"></i>
+                            <small class="text-danger d-none" id="passwordError">Password must be at least 6 characters long.</small>
+                        </div>
+
+                        <!-- Remember Me & Forgot Password -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe"/>
+                                <label class="form-check-label small" for="rememberMe"> Remember me </label>
+                            </div>
+                            <a href="{% url 'authentication:password_reset' %}" class="small text-decoration-none">Forgot password?</a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button class="btn btn-primary w-100 py-2" type="submit">Sign In</button>
+
+                        <!-- Social Login -->
+                        <div class="position-relative text-center my-4">
+                            <p class="small text-muted mb-2">Or continue with</p>
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="#" class="btn btn-outline-secondary"><i class="bi bi-google"></i></a>
+                            <a href="#" class="btn btn-outline-secondary"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="btn btn-outline-secondary"><i class="bi bi-github"></i></a>
+                        </div>
+
+                        <!-- Sign Up Redirect -->
+                        <div class="text-center mt-4">
+                            <p class="small text-muted">
+                                Don't have an account?
+                                <a href="{% url 'authentication:register' %}" class="text-decoration-none">Create account</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const toggleIcon = field.parentElement.querySelector(".password-toggle");
+
+        if (field.type === "password") {
+            field.type = "text";
+            toggleIcon.classList.replace("bi-eye-slash", "bi-eye");
+        } else {
+            field.type = "password";
+            toggleIcon.classList.replace("bi-eye", "bi-eye-slash");
+        }
+    }
+
+    function validateForm() {
+        let isValid = true;
+
+        // Email validation
+        const email = document.getElementById("loginEmail").value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            document.getElementById("emailError").classList.remove("d-none");
+            isValid = false;
+        } else {
+            document.getElementById("emailError").classList.add("d-none");
+        }
+
+        // Password validation (minimum 6 characters)
+        const password = document.getElementById("loginPassword").value;
+        if (password.length < 6) {
+            document.getElementById("passwordError").classList.remove("d-none");
+            isValid = false;
+        } else {
+            document.getElementById("passwordError").classList.add("d-none");
+        }
+
+        return isValid;
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", function (event) {
+        if (!validateForm()) {
+            event.preventDefault();
+        }
+    });
+</script>
+{% endblock %}
