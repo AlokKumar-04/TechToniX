@@ -1,8 +1,13 @@
 from django.db import models
-from django.conf import settings  # Import settings
+from django.conf import settings  
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    CATEGORY_CHOICES = [
+        ('tech', 'Tech'),
+        ('music', 'Music'),
+        ('business', 'Business'),
+    ]
+    name = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
     icon_class = models.CharField(max_length=50, help_text="CSS class for icons (e.g., 'bx bx-laptop')", null=True, blank=True)
 
     def __str__(self):
@@ -21,8 +26,8 @@ class Event(models.Model):
     date = models.DateTimeField()
     location = models.CharField(max_length=255)
     organizer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organized_events')
-    category = models.ForeignKey('event.Category', on_delete=models.SET_NULL, null=True, blank=True)  # Added category
-    event_image = models.ImageField(upload_to='event_images/', blank=True, null=True)  # Added event image
+    category = models.ForeignKey('event.Category', on_delete=models.SET_NULL, null=True, blank=True)  
+    event_image = models.ImageField(upload_to='event_images/', blank=True, null=True)  
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -56,16 +61,3 @@ class Registration(models.Model):
 
     def __str__(self):
         return f"{self.user} registered for {self.event.name} ({self.ticket.name if self.ticket else 'General Admission'})"
-
-
-class EventAnalytics(models.Model):
-    event = models.OneToOneField('event.Event', on_delete=models.CASCADE, related_name="analytics")
-    total_registrations = models.PositiveIntegerField(default=0)
-    total_views = models.PositiveIntegerField(default=0)
-    total_check_ins = models.PositiveIntegerField(default=0)  # New: Track attendees who actually checked in
-    engagement_score = models.FloatField(default=0.0)  # New: AI-based or manually calculated
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Analytics for {self.event.name}"

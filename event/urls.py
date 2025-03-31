@@ -4,13 +4,13 @@ from . import views
 app_name = 'event'
 
 urlpatterns = [
-    path('', views.EventListView.as_view(), name='event_list'),
-    path('category/<int:category_id>/', views.EventCategoryListView.as_view(), name='event_category_list'),
-    path('<int:event_id>/', views.EventDetailView.as_view(), name='event_detail'),
-    path('create/', views.EventCreateView.as_view(), name='event_create'),
-    path('dashboard/', views.OrganizerDashboardView.as_view(), name='organizer_dashboard'),
-    path('edit/<int:event_id>/', views.EventEditView.as_view(), name='event_edit'),
-    path('delete/<int:event_id>/', views.EventDeleteView.as_view(), name='event_delete'),
-    # ... other paths ...
-    
+    path('', views.event_list, name='event_list'),
+    path('create/', views.event_create, name='event_create'),
+    path('dashboard/', views.organizer_dashboard, name='organizer_dashboard'),
+    path('<int:event_id>/', views.event_detail, name='event_detail'),
+    path('<int:event_id>/register/<int:ticket_id>/', views.register_for_event, name='register_for_event'),
+    path('registrations/', views.user_registrations, name='user_registrations'),
+    path('registrations/cancel/<int:registration_id>/', views.cancel_registration, name='cancel_registration'),
+    path('edit/<int:event_id>/', views.event_edit, name='event_edit'),
+    path('delete/<int:event_id>/', views.event_delete, name='event_delete'),
 ]

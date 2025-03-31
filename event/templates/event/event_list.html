@@ -7,19 +7,11 @@
 <div class="container my-5">
     <h2 class="mb-4">Upcoming Events</h2>
 
-    <div class="mb-3">
-        <strong>Filter by Category:</strong>
-        <a href="{% url 'event:event_list' %}" class="btn btn-outline-secondary btn-sm {% if not current_category %}active{% endif %}">All</a>
-        {% for category in categories %}
-            <a href="{% url 'event:event_category_list' category.id %}" class="btn btn-outline-secondary btn-sm {% if current_category and current_category.id == category.id %}active{% endif %}">{{ category.name }}</a>
-        {% endfor %}
-    </div>
-
     {% if events %}
-        <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for event in events %}
                 <div class="col">
-                    <div class="card h-100">
+                    <div class="card shadow-sm h-100">
                         {% if event.event_image %}
                             <img src="{{ event.event_image.url }}" class="card-img-top" alt="{{ event.name }}">
                         {% else %}
@@ -28,22 +20,24 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ event.name }}</h5>
                             <p class="card-text">{{ event.description|truncatechars:100 }}</p>
-                            <p class="card-text"><small class="text-muted">Date: {{ event.date }}</small></p>
+                            <p class="card-text"><small class="text-muted">Date: {{ event.date|date:"F j, Y" }} at {{ event.date|time:"g:i A" }}</small></p>
                             <p class="card-text"><small class="text-muted">Location: {{ event.location }}</small></p>
-                            <a href="{% url 'event:event_detail' event.id %}" class="btn btn-primary">View Details</a>
+                            {% if event.category %}
+                                <p class="card-text"><small class="text-muted">Category: {{ event.category.name }}</small></p>
+                            {% endif %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="{% url 'event:event_detail' event_id=event.id %}" class="btn btn-sm btn-outline-secondary">View Details</a>
+                                </div>
+                                <small class="text-muted">Status: {{ event.get_status_display }}</small>
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p>No approved events found.</p>
-    {% endif %}
-
-    {% if request.user.is_authenticated %}
-        <div class="mt-4">
-            <a href="{% url 'event:event_create' %}" class="btn btn-success">Create New Event</a>
-        </div>
+        <p>There are no upcoming events at the moment.</p>
     {% endif %}
 </div>
 {% endblock %}

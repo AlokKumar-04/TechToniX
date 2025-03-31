@@ -7,51 +7,66 @@
 <div class="container my-5">
     <div class="row">
         <div class="col-md-8">
-            <h2>{{ event.name }}</h2>
-            <p class="text-muted">Date: {{ event.date }}</p>
-            <p class="text-muted">Location: {{ event.location }}</p>
-            {% if event.category %}
-                <p class="text-muted">Category: {{ event.category.name }}</p>
-            {% endif %}
-
-            {% if event.event_image %}
-                <img src="{{ event.event_image.url }}" class="img-fluid rounded mb-3" alt="{{ event.name }}">
-            {% else %}
-                <img src="{% static 'images/default_event_large.png' %}" class="img-fluid rounded mb-3" alt="Default Event Image">
-            {% endif %}
-
-            <p>{{ event.description|linebreaksbr }}</p>
-
-            <h4 class="mt-4">Tickets</h4>
-            {% if tickets %}
-                <ul class="list-group">
-                    {% for ticket in tickets %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>{{ ticket.name }}</strong> - ${{ ticket.price }}
-                                {% if ticket.description %}
-                                    <br><small class="text-muted">{{ ticket.description }}</small>
-                                {% endif %}
-                            </div>
-                            <span class="badge bg-info rounded-pill">{{ ticket.quantity_available }} available</span>
-                            <button class="btn btn-sm btn-outline-success">Register</button> </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No tickets available for this event.</p>
-            {% endif %}
-
-            <div class="mt-4">
-                <a href="{% url 'event:event_list' %}" class="btn btn-secondary">Back to Events</a>
-                {% if request.user == event.organizer %}
-                    <a href="#" class="btn btn-warning ms-2">Edit Event</a> <a href="#" class="btn btn-danger ms-2">Delete Event</a> {% endif %}
+            <div class="card shadow-sm mb-4">
+                {% if event.event_image %}
+                    <img src="{{ event.event_image.url }}" class="card-img-top" alt="{{ event.name }}">
+                {% else %}
+                    <img src="{% static 'images/default_event_large.png' %}" class="card-img-top" alt="Default Event Image">
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title">{{ event.name }}</h2>
+                    <p class="card-text">{{ event.description|linebreaksbr }}</p>
+                    <p class="card-text"><strong>Date:</strong> {{ event.date|date:"F j, Y" }} at {{ event.date|time:"g:i A" }}</p>
+                    <p class="card-text"><strong>Location:</strong> {{ event.location }}</p>
+                    {% if event.category %}
+                        <p class="card-text"><strong>Category:</strong> {{ event.category.name }}</p>
+                    {% endif %}
+                    <p class="card-text"><small class="text-muted">Status: {{ event.get_status_display }}</small></p>
+                    <hr class="my-3">
+                    <h4>Tickets</h4>
+                    {% if tickets %}
+                        <ul class="list-group mb-3">
+                            {% for ticket in tickets %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5>{{ ticket.name }}</h5>
+                                        {% if ticket.description %}
+                                            <p class="mb-0 text-muted">{{ ticket.description }}</p>
+                                        {% endif %}
+                                        <small>Price: ₹{{ ticket.price }}</small>
+                                    </div>
+                                    <div>
+                                        {% if user.is_authenticated %}
+                                            {% if ticket.quantity_available > 0 %}
+                                                <a href="{% url 'event:register_for_event' event_id=event.id ticket_id=ticket.id %}" class="btn btn-sm btn-success">Register</a>
+                                            {% else %}
+                                                <span class="text-danger">Sold Out</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <a href="{% url 'authentication:login' %}?next={{ request.path }}" class="btn btn-sm btn-primary">Login to Register</a>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No tickets are available for this event.</p>
+                    {% endif %}
+                    <div class="mt-3">
+                        <a href="{% url 'event:event_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Events
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">Organized by:</h6>
-                    <p class="card-text">{{ event.organizer.username }}</p>
+                    <h5 class="card-title">Organized By</h5>
+                    <p class="card-text">{{ event.organizer.get_full_name|default:event.organizer.username }}</p>
+                    <hr class="my-3">
+                    <h6 class="card-subtitle mb-2 text-muted">Share this event</h6>
                     </div>
             </div>
         </div>
