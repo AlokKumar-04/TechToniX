@@ -1,0 +1,167 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}User Profile - TechToniX{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="mb-4">User Profile</h2>
+                    <div class="d-flex justify-content-center mb-3">
+                        <div id="profile-image-container"></div>
+                    </div>
+                    <div class="profile-info text-center">
+                        <p><strong>Username:</strong> <span id="username"></span></p>
+                        <p><strong>First Name:</strong> <span id="first_name"></span></p>
+                        <p><strong>Last Name:</strong> <span id="last_name"></span></p>
+                        <p><strong>Email:</strong> <span id="email"></span></p>
+                        <p><strong>Bio:</strong> <span id="bio"></span></p>
+                        <button id="edit-button" class="btn btn-primary btn-sm mt-3">Edit Profile</button>
+                    </div>
+
+                    <div class="edit-form mt-4" style="display: none;">
+                        <h3>Edit Profile</h3>
+                        <form id="edit-profile-form">
+                            <div class="mb-3">
+                                <label for="edit_first_name" class="form-label">First Name:</label>
+                                <input type="text" class="form-control" id="edit_first_name" name="first_name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_last_name" class="form-label">Last Name:</label>
+                                <input type="text" class="form-control" id="edit_last_name" name="last_name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_bio" class="form-label">Bio:</label>
+                                <textarea class="form-control" id="edit_bio" name="bio"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="edit_profile_picture" class="form-label">Profile Picture:</label>
+                                <input type="file" class="form-control" id="edit_profile_picture" name="profile_picture">
+                            </div>
+                            <button type="submit" class="btn btn-success">Save Changes</button>
+                            <button type="button" class="btn btn-secondary ms-2" id="cancel-button">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+</style>
+
+<script>
+    const profileInfoDiv = document.querySelector('.profile-info');
+    const editFormDiv = document.querySelector('.edit-form');
+    const editButton = document.getElementById('edit-button');
+    const cancelButton = document.getElementById('cancel-button');
+    const editProfileForm = document.getElementById('edit-profile-form');
+    const profileImageContainer = document.getElementById('profile-image-container');
+
+    function fetchUserProfile() {
+        fetch('/auth/api/profile/')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('username').textContent = data.username;
+                document.getElementById('first_name').textContent = data.first_name;
+                document.getElementById('last_name').textContent = data.last_name;
+                document.getElementById('email').textContent = data.email;
+                document.getElementById('bio').textContent = data.bio || 'No bio provided.';
+
+                profileImageContainer.innerHTML = '';
+                const profileImage = document.createElement('img');
+                profileImage.classList.add('profile-image');
+                profileImage.alt = 'Profile Picture';
+                if (data.profile_picture) {
+                    profileImage.src = data.profile_picture;
+                } else {
+                    profileImage.src = '{% static "images/tech.jpg" %}';
+                }
+                profileImageContainer.appendChild(profileImage);
+            })
+            .catch(error => {
+                console.error('Error fetching profile:', error);
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchUserProfile);
+
+    editButton.addEventListener('click', () => {
+        profileInfoDiv.style.display = 'none';
+        editFormDiv.style.display = 'block';
+        fetch('/auth/api/profile/')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('edit_first_name').value = data.first_name;
+                document.getElementById('edit_last_name').value = data.last_name;
+                document.getElementById('edit_bio').value = data.bio || '';
+            });
+    });
+
+    cancelButton.addEventListener('click', () => {
+        profileInfoDiv.style.display = 'block';
+        editFormDiv.style.display = 'none';
+    });
+
+    editProfileForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(editProfileForm);
+        const csrftoken = getCookie('csrftoken'); // Get CSRF token
+
+        fetch('/auth/api/profile/', {
+            method: 'PUT',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrftoken, // Include CSRF token in headers
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Profile updated:', data);
+            profileInfoDiv.style.display = 'block';
+            editFormDiv.style.display = 'none';
+            fetchUserProfile();
+        })
+        .catch(error => {
+            console.error('Error updating profile:', error);
+        });
+    });
+
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

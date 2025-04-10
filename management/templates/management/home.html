@@ -1,0 +1,83 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Admin Home - TechToniX{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="mb-4">Welcome to TechToniX Admin!</h1>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class='bx bx-calendar-plus'></i> Quick Actions</h5>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'admin_event_create' %}" class="btn btn-primary"><i class='bx bx-plus'></i> Create New Event</a>
+                            <a href="{% url 'admin_event_management' %}" class="btn btn-outline-primary"><i class='bx bx-list-ul'></i> Manage Events</a>
+                            <a href="{% url 'admin_ticket_requests' %}" class="btn btn-outline-primary"><i class='bx bx-envelope-open'></i> View Ticket Requests</a>
+                            <a href="{% url 'admin_user_management' %}" class="btn btn-outline-primary"><i class='bx bx-group'></i> Manage Users</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class='bx bx-bar-chart-alt-2'></i> Key Metrics</h5>
+                        <div class="row">
+                            <div class="col-sm-6 mb-2">
+                                <div class="card bg-light text-center">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">Total Events</h6>
+                                        <h3 class="card-text">{{ total_events|default:0 }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <div class="card bg-light text-center">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">Pending Events</h6>
+                                        <h3 class="card-text">{{ pending_events|default:0 }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <div class="card bg-light text-center">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">Total Users</h6>
+                                        <h3 class="card-text">{{ total_users|default:0 }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <div class="card bg-light text-center">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted">Open Ticket Requests</h6>
+                                        <h3 class="card-text">{{ open_ticket_requests|default:0 }}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title"><i class='bx bx-bell'></i> Recent Activity</h5>
+                {% if recent_activity %}
+                    <ul class="list-group list-group-flush">
+                        {% for activity in recent_activity %}
+                            <li class="list-group-item">{{ activity.message }} <small class="text-muted">- {{ activity.timestamp|timesince }} ago</small></li>
+                        {% empty %}
+                            <li class="list-group-item">No recent activity to display.</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No recent activity to display.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

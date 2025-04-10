@@ -1,0 +1,151 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Admin Dashboard - TechToniX{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="mb-4">Admin Dashboard</h1>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class='bx bx-calendar-event'></i> Events Overview</h5>
+                        <div class="d-flex justify-content-around align-items-center">
+                            <div>
+                                <h6 class="text-white">Total</h6>
+                                <h3 class="text-white">{{ total_events|default:0 }}</h3>
+                            </div>
+                            <div>
+                                <h6 class="text-white">Approved</h6>
+                                <h3 class="text-white">{{ approved_events|default:0 }}</h3>
+                            </div>
+                            <div>
+                                <h6 class="text-white">Pending</h6>
+                                <h3 class="text-white">{{ pending_events|default:0 }}</h3>
+                            </div>
+                            <div>
+                                <h6 class="text-white">Rejected</h6>
+                                <h3 class="text-white">{{ rejected_events|default:0 }}</h3>
+                            </div>
+                        </div>
+                        <a href="{% url 'management:event_management' %}" class="btn btn-sm btn-light mt-3">View All Events</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class='bx bx-group'></i> User Statistics</h5>
+                        <div>
+                            <h6 class="text-white">Total Users</h6>
+                            <h3 class="text-white">{{ total_users|default:0 }}</h3>
+                        </div>
+                        <div>
+                            <h6 class="text-white">New Users (Last 30 Days)</h6>
+                            <h3 class="text-white">{{ new_users_30_days|default:0 }}</h3>
+                        </div>
+                        <a href="{% url 'management:admin_user_management' %}" class="btn btn-sm btn-light mt-3">Manage Users</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm bg-warning text-white">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class='bx bx-ticket'></i> Ticket Requests</h5>
+                        <div>
+                            <h6 class="text-white">Total Requests</h6>
+                            <h3 class="text-white">{{ total_ticket_requests|default:0 }}</h3>
+                        </div>
+                        <div>
+                            <h6 class="text-white">Open Requests</h6>
+                            <h3 class="text-white">{{ open_ticket_requests|default:0 }}</h3>
+                        </div>
+                        <div>
+                            <h6 class="text-white">Approved Requests</h6>
+                            <h3 class="text-white">{{ approved_ticket_requests|default:0 }}</h3>
+                        </div>
+                        <div>
+                            <h6 class="text-white">Rejected Requests</h6>
+                            <h3 class="text-white">{{ rejected_ticket_requests|default:0 }}</h3>
+                        </div>
+                        <a href="{% url 'management:admin_ticket_requests' %}" class="btn btn-sm btn-light mt-3">View Requests</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm bg-info text-white">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class='bx bx-bell'></i> Recent Activity</h5>
+                        {% if recent_activity %}
+                            <ul class="list-group list-group-flush">
+                                {% for activity in recent_activity %}
+                                    <li class="list-group-item bg-info text-white">{{ activity.message }} <small class="text-white">- {{ activity.timestamp|timesince }} ago</small></li>
+                                {% empty %}
+                                    <li class="list-group-item bg-info text-white">No recent activity to display.</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-white">No recent activity to display.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm bg-danger text-white">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class='bx bx-check-circle'></i> Event Approval Queue</h5>
+                        {% if pending_events_list %}
+                            <ul class="list-group list-group-flush">
+                                {% for event in pending_events_list %}
+                                    <li class="list-group-item bg-danger text-white d-flex justify-content-between align-items-center">
+                                        {{ event.name }} - {{ event.organizer.username }}
+                                        <div>
+                                            <a href="{% url 'management:admin_event_approve' event.id %}" class="btn btn-sm btn-light"><i class='bx bx-check'></i> Approve</a>
+                                            <a href="{% url 'management:admin_event_reject' event.id %}" class="btn btn-sm btn-light"><i class='bx bx-x'></i> Reject</a>
+                                        </div>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item bg-danger text-white">No events pending approval.</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-white">No events pending approval.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm bg-dark text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class='bx bx-envelope-open'></i> Ticket Request Queue</h5>
+                {% if open_ticket_requests_list %}
+                    <ul class="list-group list-group-flush">
+                        {% for request in open_ticket_requests_list %}
+                            <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+                                {{ request.user.username }} - {{ request.event.name }} ({{ request.quantity }} tickets)
+                                <div>
+                                    <a href="{% url 'management:admin_ticket_request_approve' request.id %}" class="btn btn-sm btn-light"><i class='bx bx-check'></i> Approve</a>
+                                    <a href="{% url 'management:admin_ticket_request_reject' request.id %}" class="btn btn-sm btn-light"><i class='bx bx-x'></i> Reject</a>
+                                    <a href="{% url 'management:admin_ticket_request_details' request.id %}" class="btn btn-sm btn-light"><i class='bx bx-info-circle'></i> Details</a>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item bg-dark text-white">No open ticket requests.</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-white">No open ticket requests.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

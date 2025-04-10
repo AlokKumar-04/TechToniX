@@ -19,11 +19,12 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('app.urls')),  
+    path('management/', include('management.urls')),  # Custom admin URLs first
+    path('admin/', admin.site.urls),                          # Default Django admin URLs second
     path('auth/', include('authentication.urls')),
+    path('', include('app.urls')),
     path('events/', include('event.urls')),
-]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

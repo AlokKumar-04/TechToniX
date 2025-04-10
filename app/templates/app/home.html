@@ -7,7 +7,7 @@
 
 <div class="hero-section position-relative text-white text-center d-flex align-items-center"
      style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)),
-                    url('{% static 'images/events.jpg' %}') center/cover no-repeat; min-height: 70vh;">
+                     url('{% static 'images/events.jpg' %}') center/cover no-repeat; min-height: 70vh;">
     <div class="container">
         <h1 class="display-3 fw-bold animate__animated animate__fadeInDown">Discover and Join Exciting Tech Events</h1>
         <p class="lead my-4 animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
@@ -71,7 +71,7 @@
                     <p class="card-text text-muted"><i class="bi bi-calendar-event me-1"></i> {{ event.date|date:"F j, Y" }} at {{ event.date|time:"g:i A" }}</p>
                     <p class="card-text text-muted"><i class="bi bi-geo-alt me-1"></i> {{ event.location }}</p>
                     <p class="card-text flex-grow-1">{{ event.description|truncatewords:20 }}</p>
-                    <a href="#" class="btn btn-primary mt-auto rounded-pill" aria-label="Learn more about {{ event.name }}">Learn More</a>
+                    <a href="{% url 'app:event_detail' event.id %}" class="btn btn-primary mt-auto rounded-pill" aria-label="Learn more about {{ event.name }}">Learn More</a>
                 </div>
             </div>
         </div>

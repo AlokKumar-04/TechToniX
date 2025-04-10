@@ -1,0 +1,54 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<h2>Create New Event</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea>
+    </div>
+    <div>
+        <label for="date">Date and Time:</label>
+        <input type="datetime-local" id="date" name="date" required>
+    </div>
+    <div>
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+    </div>
+    <div>
+        <label for="category">Category:</label>
+        <select id="category" name="category">
+            <option value="tech">Tech</option>
+            <option value="music">Music</option>
+            <option value="business">Business</option>
+            </select>
+    </div>
+    <div>
+        <label for="event_image">Event Image:</label>
+        <input type="file" id="event_image" name="event_image">
+    </div>
+    <div>
+        <label for="status">Status:</label>
+        <select id="status" name="status">
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+            <option value="inactive">Inactive</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="archived">Archived</option>
+        </select>
+    </div>
+    <button type="submit">Create Event</button>
+</form>
+{% endblock %}

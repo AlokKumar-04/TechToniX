@@ -1,0 +1,195 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Attendee Dashboard - TechToniX{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2>Attendee Dashboard</h2>
+
+    <div class="my-4">
+        <h3>Quick Actions</h3>
+        <div class="d-flex flex-wrap gap-2">
+            {% if request.user.is_event_organizer %}
+            <a href="{% url 'event:create' %}" class="btn btn-primary">Create New Event</a>
+            {% endif %}
+            <a href="{% url 'app:view_registrations' %}" class="btn btn-secondary">View Registrations</a>
+            <a href="{% url 'app:user_profile' %}" class="btn btn-info">Manage Profile</a>
+            <a href="{% url 'app:upcoming_events' %}" class="btn btn-success">Upcoming Events</a>
+        </div>
+    </div>
+
+    <div id="registrations-list">
+        </div>
+
+    <div id="notifications-list">
+        </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const registrationsList = document.getElementById('registrations-list');
+
+        function fetchRegistrations() {
+            fetch('/api/attendee/registrations/')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    registrationsList.innerHTML = ''; // Clear loading message
+
+                    if (data.length > 0) {
+                        const ul = document.createElement('ul');
+                        ul.classList.add('list-group');
+
+                        data.forEach(registration => {
+                            const li = document.createElement('li');
+                            li.classList.add('list-group-item');
+
+                            // Format registration date
+                            const registrationDate = new Date(registration.registration_date).toLocaleString();
+
+                            li.innerHTML = `
+                                <strong>${registration.event.title}</strong> - ${registration.event.date}
+                                <br>
+                                Status: ${registration.status.charAt(0).toUpperCase() + registration.status.slice(1)}
+                                <br>
+                                Registration Date: ${registrationDate}
+                                <br>
+                                ${registration.status === 'active' ? `
+                                    <a href="/event/${registration.event.id}/" class="btn btn-primary btn-sm mt-2">View Event Details</a>
+                                    <button class="btn btn-danger btn-sm mt-2 cancel-registration" data-registration-id="${registration.id}">Cancel Registration</button>
+                                ` : ''}
+                            `;
+                            ul.appendChild(li);
+                        });
+                        registrationsList.appendChild(ul);
+                    } else {
+                        registrationsList.innerHTML = '<p>You have not booked any events yet.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching registrations:', error);
+                    registrationsList.innerHTML = '<p>Error loading registrations.</p>';
+                });
+        }
+
+        fetchRegistrations(); // Initial fetch
+
+        // Add event listener for cancel registration buttons
+        document.addEventListener('click', (event) => {
+            if (event.target.classList.contains('cancel-registration')) {
+                const registrationId = event.target.dataset.registrationId;
+
+                fetch(`/api/registrations/${registrationId}/cancel/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Update the UI to reflect the cancellation
+                    fetchRegistrations(); // Refresh registrations list
+                })
+                .catch(error => {
+                    console.error('Error cancelling registration:', error);
+                    alert('Failed to cancel registration.');
+                });
+            }
+        });
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+
+    // Example, add this to the attendee_dashboard.html
+
+function fetchNotifications() {
+    fetch('/api/notifications/')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const notificationsList = document.getElementById('notifications-list');
+            notificationsList.innerHTML = '';
+
+            if (data.length > 0) {
+                const ul = document.createElement('ul');
+                ul.classList.add('list-group');
+
+                data.forEach(notification => {
+                    const li = document.createElement('li');
+                    li.classList.add('list-group-item');
+                    li.innerHTML = `
+                        ${notification.message} - ${new Date(notification.timestamp).toLocaleString()}
+                        ${notification.is_read ? '' : `<button class="btn btn-sm btn-secondary mark-read" data-notification-id="${notification.id}">Mark as Read</button>`}
+                    `;
+                    ul.appendChild(li);
+                });
+                notificationsList.appendChild(ul);
+            } else {
+                notificationsList.innerHTML = '<p>No notifications.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching notifications:', error);
+            document.getElementById('notifications-list').innerHTML = '<p>Error loading notifications.</p>';
+        });
+}
+
+// Add event listener for mark as read buttons
+document.addEventListener('click', (event) => {
+    if (event.target.classList.contains('mark-read')) {
+        const notificationId = event.target.dataset.notificationId;
+
+        fetch(`/api/notifications/${notificationId}/read/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            fetchNotifications(); // Refresh notifications list
+        })
+        .catch(error => {
+            console.error('Error marking notification as read:', error);
+            alert('Failed to mark notification as read.');
+        });
+    }
+});
+
+fetchNotifications(); // Initial fetch
+</script>
+{% endblock %}
