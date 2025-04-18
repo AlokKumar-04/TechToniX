@@ -1,40 +1,56 @@
 {% extends 'app/base.html' %}
 {% load static %}
 
-{% block title %}Event Details - TechToniX{% endblock %}
+{% block title %}{{ event.title }} - TechToniX{% endblock %}
 
 {% block content %}
-<div class="container my-5" id="event-details">
-    <p>Loading...</p>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <img src="{{ event.event_image.url }}" class="card-img-top" alt="{{ event.title }}" style="max-height: 300px; object-fit: cover;">
+                <div class="card-body p-4">
+                    <h2 class="card-title mb-3">{{ event.title }}</h2>
+                    <p class="card-text"><i class="bi bi-calendar-event me-2"></i> Date: {{ event.date|date:"F j, Y" }}</p>
+                    <p class="card-text"><i class="bi bi-clock me-2"></i> Time: {{ event.time|time:"g:i A" }}</p>
+                    <p class="card-text"><i class="bi bi-geo-alt me-2"></i> Location: {{ event.location }}</p>
+                    <p class="card-text mb-3">{{ event.description|linebreaksbr }}</p>
+                    <p class="card-text">
+                        <i class="bi bi-person-fill me-2"></i> Organizer:
+                        {% if event.organizer %}
+                            {{ event.organizer.username }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{% url 'app:home' %}" class="btn btn-secondary"><i class="bi bi-arrow-left me-2"></i> Back to Events</a>
+                        <button class="btn btn-primary"><i class="bi bi-ticket me-2"></i> Register Now</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const eventId = window.location.pathname.split('/').pop(); // Get event ID from URL
-        const eventDetailsDiv = document.getElementById('event-details');
-
-        fetch(`/api/events/${eventId}/`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                eventDetailsDiv.innerHTML = `
-                    <h2>${data.name}</h2>
-                    <img src="${data.event_image}" alt="${data.name}" style="max-width: 300px;">
-                    <p>Date: ${data.date}</p>
-                    <p>Location: ${data.location}</p>
-                    <p>Description: ${data.description}</p>
-                    <p>Organizer: ${data.organizer}</p>
-                    <a href="/" class="btn btn-secondary mt-3">Back to Home</a>
-                `;
-            })
-            .catch(error => {
-                console.error('Error fetching event details:', error);
-                eventDetailsDiv.innerHTML = '<p>Error loading event details.</p>';
-            });
-    });
-</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css">
+<style>
+    .card-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #333;
+    }
+    .card-text {
+        font-size: 1.1rem;
+        color: #555;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+</style>
 {% endblock %}

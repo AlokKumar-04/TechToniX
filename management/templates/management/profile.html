@@ -1,4 +1,4 @@
-{% extends 'admin/base.html' %}
+{% extends 'management/base.html' %}
 
 {% block title %}Admin Profile - TechToniX{% endblock %}
 
@@ -11,7 +11,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title"><i class='bx bx-user'></i> Personal Information</h5>
-                        <form method="post" action="{% url 'admin_profile_update' %}">
+                        <form method="post" action="{% url 'management:admin_profile_update' %}">
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
@@ -46,7 +46,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title"><i class='bx bx-lock-alt'></i> Change Password</h5>
-                        <form method="post" action="{% url 'admin_password_change' %}">
+                        <form method="post" action="{% url 'management:admin_password_change' %}">
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="old_password" class="form-label">Current Password</label>
