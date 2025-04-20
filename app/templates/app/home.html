@@ -5,26 +5,38 @@
 
 {% block content %}
 
-<div class="hero-section position-relative text-white text-center d-flex align-items-center"
-     style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)),
-                     url('{% static 'images/events.jpg' %}') center/cover no-repeat; min-height: 70vh;">
+<section class="hero-section position-relative overflow-hidden">
     <div class="container">
-        <h1 class="display-3 fw-bold animate__animated animate__fadeInDown">Discover and Join Exciting Tech Events</h1>
-        <p class="lead my-4 animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
-            Explore a wide range of tech conferences, workshops, meetups, and more. Find the perfect event to expand your knowledge and network.
-        </p>
-        <div class="mt-5 d-flex flex-wrap justify-content-center gap-3 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
-            <a href="#events" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">Explore Events</a>
-            <a href="{% url 'authentication:register' %}" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill">Register for Free</a>
-            {% if not user.is_authenticated %}
-            <a href="{% url 'authentication:SignIn' %}" class="btn btn-light btn-lg px-5 py-3 rounded-pill">Log In</a>
-            {% endif %}
-        </div>
-        <div class="position-absolute bottom-0 start-0 end-0 py-3" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
-            <a href="#features" class="text-white-50"><i class="bi bi-chevron-down fs-4"></i> Learn More Below</a>
+        <div class="row min-vh-80 align-items-center">
+            <div class="col-lg-8 text-center text-lg-start">
+                <h1 class="display-2 fw-bold mb-4 animate__animated animate__fadeInDown">
+                    <span class="text-gradient">Transform</span> Your Tech Journey
+                </h1>
+                <p class="lead mb-5 text-muted animate__animated animate__fadeIn" 
+                   style="animation-delay: 0.3s;">
+                    Join the world's most innovative tech community with 1000+ events annually
+                </p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start animate__animated animate__fadeInUp" 
+                     style="animation-delay: 0.5s;">
+                    <a href="#events" class="btn btn-lg btn-primary px-5 rounded-pill shadow-hover">
+                        <i class='bx bx-search-alt me-2'></i>Explore Events
+                    </a>
+                    <a href="{% url 'authentication:register' %}" 
+                       class="btn btn-lg btn-outline-dark px-5 rounded-pill hover-scale">
+                        <i class='bx bx-user-plus me-2'></i>Join Free
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 mt-5 mt-lg-0">
+                <div class="hero-illustration position-relative animate__animated animate__fadeInRight">
+                    <img src="{% static 'images/events.jpg' %}" 
+                         alt="Tech Illustration" 
+                         class="img-fluid rounded-4 shadow-lg">
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
 
 <section id="features" class="bg-light py-5">
     <div class="container">
@@ -55,45 +67,226 @@
     </div>
 </section>
 
-<section id="events" class="container py-5">
-    <h2 class="text-center mb-5 fw-bold">Explore Our Upcoming Events</h2>
-    <div class="row g-4">
-        {% for event in events %}
-        <div class="col-lg-4 col-md-6">
-            <div class="card event-card h-100 shadow-sm border-0">
-                {% if event.event_image %}
-                <img src="{{ event.event_image.url }}" class="card-img-top img-fluid" alt="{{ event.name }}" loading="lazy" style="height: 200px; object-fit: cover;">
-                {% else %}
-                <img src="{% static 'images/events.jpg' %}" class="card-img-top img-fluid" alt="Default Event Image" loading="lazy" style="height: 200px; object-fit: cover;">
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title fw-bold">{{ event.name }}</h5>
-                    <p class="card-text text-muted"><i class="bi bi-calendar-event me-1"></i> {{ event.date|date:"F j, Y" }} at {{ event.date|time:"g:i A" }}</p>
-                    <p class="card-text text-muted"><i class="bi bi-geo-alt me-1"></i> {{ event.location }}</p>
-                    <p class="card-text flex-grow-1">{{ event.description|truncatewords:20 }}</p>
-                    <a href="{% url 'app:event_detail' event.id %}" class="btn btn-primary mt-auto rounded-pill" aria-label="Learn more about {{ event.name }}">Learn More</a>
+<section id="events" class="py-6 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5 px-3">
+            <div>
+                <span class="text-uppercase text-primary fw-bold small">Tech Events</span>
+                <h2 class="display-5 fw-bold mt-2">Upcoming Events</h2>
+                <div class="gradient-line"></div>
+            </div>
+            <a href="{% url 'app:upcoming_events' %}" class="btn btn-primary rounded-pill px-4 py-2">
+                Explore All <i class='bx bx-chevron-right ms-2'></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for event in events %}
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <div class="card border-0 shadow-hover h-100 overflow-hidden">
+                    <div class="card-img-top position-relative overflow-hidden">
+                        <img src="{{ event.event_image.url }}" 
+                             class="img-fluid event-image hover-zoom" 
+                             alt="{{ event.name }}"
+                             style="height: 250px; object-fit: cover;">
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-gradient-primary rounded-pill px-3 py-2">
+                                {{ event.category }}
+                            </span>
+                        </div>
+                        <div class="image-overlay"></div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="icon-sm bg-primary text-white rounded-circle me-2">
+                                <i class='bx bx-calendar'></i>
+                            </div>
+                            <span class="text-muted">{{ event.date|date:"M d, Y" }}</span>
+                        </div>
+                        <h3 class="h5 fw-bold mb-3">{{ event.name }}</h3>
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-sm bg-dark text-white rounded-circle me-2">
+                                <i class='bx bx-map'></i>
+                            </div>
+                            <span class="text-muted">{{ event.location }}</span>
+                        </div>
+                        <a href="{% url 'app:event_detail' event.id %}" 
+                           class="btn btn-link text-decoration-none p-0 stretched-link">
+                            Discover Event <i class='bx bx-chevron-right ms-2'></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-6">
+                <div class="empty-state">
+                    <i class='bx bx-calendar-event display-1 text-muted mb-4'></i>
+                    <h3 class="h4 mb-3">No Upcoming Events</h3>
+                    <p class="text-muted">Stay tuned for exciting tech events coming soon!</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<section class="cta-section bg-dark text-white mt-5 py-6">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="h1 fw-bold m-5">Ready to Level Up?</h2>
+                <p class="lead mb-5">Join our community of tech innovators and thought leaders</p>
+                <div class="d-flex flex-wrap justify-content-center mb-5 gap-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'app:attendee_dashboard' %}" 
+                       class="btn btn-primary btn-lg px-5 rounded-pill">
+                        Go to Dashboard
+                    </a>
+                    {% else %}
+                    <a href="{% url 'authentication:register' %}" 
+                       class="btn btn-primary btn-lg px-5 rounded-pill">
+                        Get Started Free
+                    </a>
+                    <a href="{% url 'authentication:SignIn' %}" 
+                       class="btn btn-outline-light btn-lg px-5 rounded-pill">
+                        Sign In
+                    </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        {% empty %}
-        <div class="col-12 text-center">
-            <p class="lead">No upcoming events at the moment. Please check back later!</p>
-        </div>
-        {% endfor %}
     </div>
-    {% if events|length > 6 %}
-    <div class="text-center mt-4">
-        <a href="{% url 'event:list' %}" class="btn btn-outline-primary rounded-pill">View All Events</a>
-    </div>
-    {% endif %}
 </section>
 
-<section class="bg-primary py-5 text-white text-center">
-    <div class="container">
-        <h2 class="fw-bold mb-3">Ready to Dive In?</h2>
-        <p class="lead mb-4">Register now and start exploring the exciting world of tech events on TechToniX!</p>
-        <a href="{% url 'authentication:register' %}" class="btn btn-light btn-lg px-5 py-3 rounded-pill">Join TechToniX Today</a>
-    </div>
-</section>
+<style>
+    .hero-section {
+        padding: 6rem 0;
+        background: linear-gradient(45deg, 
+            var(--primary-soft) 0%, 
+            rgba(255,255,255,1) 100%);
+    }
+
+    .text-gradient {
+        background: linear-gradient(45deg, var(--primary), var(--success));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hover-scale {
+        transition: transform 0.3s ease;
+    }
+
+    .hover-scale:hover {
+        transform: translateY(-5px);
+    }
+
+    .shadow-hover {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .shadow-hover:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .event-image {
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover .event-image {
+        transform: scale(1.05);
+    }
+
+    .cta-section {
+        background: linear-gradient(45deg, var(--dark), var(--primary));
+    }
+
+    .gradient-line {
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #6366f1 0%, #ec4899 100%);
+        margin-top: 1rem;
+    }
+
+    .shadow-hover {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .shadow-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+
+    .hover-zoom {
+        transition: transform 0.3s ease;
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.4) 100%);
+    }
+
+    .icon-sm {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+
+    .empty-state {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: rgba(255,255,255,0.8);
+        border-radius: 1rem;
+    }
+
+    .stretched-link::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation trigger for cards
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('animate__fadeInUp');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.card, .feature-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    });
+</script>
 
 {% endblock %}

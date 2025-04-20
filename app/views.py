@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from event.models import Event, Registration
 from app.models import Notification
+from django.template.defaulttags import register
 
 def home(request):
     upcoming_events = Event.objects.filter(date__gte=timezone.now()).order_by('date')[:6]
@@ -10,6 +11,12 @@ def home(request):
         'events': upcoming_events,
     }
     return render(request, 'app/home.html', context)
+
+
+@register.filter
+def chunks(lst, chunk_size):
+    for i in range(0, len(lst), chunk_size):
+        yield lst[i:i + chunk_size]
 
 @login_required
 def attendee_dashboard(request):

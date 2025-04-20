@@ -1,71 +1,117 @@
 {% extends 'app/base.html' %}
 {% load static %}
 
-{% block title %}User Profile - TechToniX{% endblock %}
+{% block title %}{{ user.username }} Profile - TechToniX{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h2 class="mb-4">User Profile</h2>
-
-                    <div class="d-flex justify-content-center mb-3">
-                        {% if request.user.profile_picture %}
-                            <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture" class="profile-image">
-                        {% else %}
-                            <img src="{% static 'images/tech.jpg' %}" alt="Default Profile Picture" class="profile-image">
-                        {% endif %}
-                    </div>
-
-                    <div class="profile-info">
-                        <p><strong>Username:</strong> {{ request.user.username }}</p>
-                        <p><strong>First Name:</strong> {{ request.user.first_name }}</p>
-                        <p><strong>Last Name:</strong> {{ request.user.last_name }}</p>
-                        <p><strong>Email:</strong> {{ request.user.email }}</p>
-                        <p><strong>Bio:</strong> {{ request.user.bio|default:"No bio provided." }}</p>
-                        <button id="edit-button" class="btn btn-primary btn-sm mt-3">Edit Profile</button>
-                    </div>
-
-                    <div class="edit-form mt-4" style="display: none;">
-                        <h3>Edit Profile</h3>
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {% if errors %}
-                                <div class="alert alert-danger">
-                                    {% if errors.non_field_errors %}
-                                        {{ errors.non_field_errors|join:", " }}<br>
-                                    {% endif %}
-                                    {% if errors.first_name %}
-                                        <strong>First Name:</strong> {{ errors.first_name|join:", " }}<br>
-                                    {% endif %}
-                                    {% if errors.last_name %}
-                                        <strong>Last Name:</strong> {{ errors.last_name|join:", " }}<br>
-                                    {% endif %}
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-lg overflow-hidden h-100">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex justify-content-center">
+                        <div class="avatar-upload">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}"
+                                     class="avatar-image rounded-circle"
+                                     alt="Profile picture">
+                            {% else %}
+                                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person fs-1 text-white"></i>
                                 </div>
                             {% endif %}
-                            <div class="mb-3">
-                                <label for="edit_first_name" class="form-label">First Name:</label>
-                                <input type="text" class="form-control" id="edit_first_name" name="first_name" value="{{ request.user.first_name }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_last_name" class="form-label">Last Name:</label>
-                                <input type="text" class="form-control" id="edit_last_name" name="last_name" value="{{ request.user.last_name }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_bio" class="form-label">Bio:</label>
-                                <textarea class="form-control" id="edit_bio" name="bio">{{ request.user.bio|default:"" }}</textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="edit_profile_picture" class="form-label">Profile Picture:</label>
-                                <input type="file" class="form-control" id="edit_profile_picture" name="profile_picture">
-                                <small class="form-text text-muted">Optional: Update your profile picture.</small>
-                            </div>
-                            <button type="submit" class="btn btn-success">Save Changes</button>
-                            <button type="button" class="btn btn-secondary ms-2" id="cancel-button">Cancel</button>
-                        </form>
+                            <label class="avatar-edit">
+                                <i class="bi bi-camera-fill"></i>
+                                <input type="file" class="d-none" name="profile_picture">
+                            </label>
+                        </div>
                     </div>
+                </div>
+                <div class="card-body text-center pt-0">
+                    <h2 class="h3 mb-1 mt-n3">{{ user.get_full_name }}</h2>
+                    <p class="text-muted mb-3">@{{ user.username }}</p>
+
+                    <div class="text-start mb-4">
+                        <h5 class="h6 text-uppercase text-muted mb-3"><i class="bi bi-person-lines-fill me-2"></i>About Me</h5>
+                        <p class="mb-0 text-muted lead">
+                            {{ user.bio|default:"No bio provided yet. Share something about yourself!" }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg h-100">
+                <div class="card-header bg-white py-3 border-0">
+                    <h3 class="h4 mb-0"><i class="bi bi-sliders me-2"></i>Account Settings</h3>
+                </div>
+                <div class="card-body pt-4">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <h5 class="h6 text-uppercase text-muted mb-3">Personal Information</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control"
+                                                   id="firstName" name="first_name"
+                                                   value="{{ user.first_name }}" required>
+                                            <label for="firstName">First Name</label>
+                                            <div class="invalid-feedback">
+                                                Please provide your first name
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control"
+                                                   id="lastName" name="last_name"
+                                                   value="{{ user.last_name }}" required>
+                                            <label for="lastName">Last Name</label>
+                                            <div class="invalid-feedback">
+                                                Please provide your last name
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="email" class="form-control" name="email"
+                                                      id="email"  value="{{ user.email }}" required
+                                                      placeholder="name@example.com">
+                                            <label for="email">Email</label>
+                                             <div class="invalid-feedback">
+                                                Please provide a valid email address
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" name="bio"
+                                              id="bio" style="height: 100px"
+                                              placeholder="Tell us about yourself">{{ user.bio }}</textarea>
+                                    <label for="bio">Bio</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="d-flex gap-3 justify-content-end border-top pt-4">
+                                    <button type="submit" class="btn btn-gradient-primary px-5">
+                                        <i class="bi bi-save me-2"></i>Save Changes
+                                    </button>
+                                    <a href="#" class="btn btn-outline-secondary px-5">
+                                        <i class="bi bi-shield-lock me-2"></i>Change Password
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -73,28 +119,104 @@
 </div>
 
 <style>
-    .profile-image {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
+    .avatar-upload {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        color: #6366f1;
+    }
+
+    .avatar-image {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.1);
+        border: 4px solid rgba(255,255,255,0.2);
+        backdrop-filter: blur(5px);
+    }
+
+    .avatar-edit {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .avatar-edit:hover {
+        transform: scale(1.1);
+        background: #f8f9fa;
+    }
+
+    .stat-card {
+        background: rgba(var(--bs-primary-rgb), 0.1);
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+
+    .btn-gradient-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        border: none;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .btn-gradient-primary:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .form-floating textarea.form-control {
+        min-height: 100px;
+    }
+
+    .invalid-feedback {
+        display: none;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+
+    .was-validated .form-control:invalid ~ .invalid-feedback {
+        display: block;
     }
 </style>
 
 <script>
-    const profileInfoDiv = document.querySelector('.profile-info');
-    const editFormDiv = document.querySelector('.edit-form');
-    const editButton = document.getElementById('edit-button');
-    const cancelButton = document.getElementById('cancel-button');
-
-    editButton.addEventListener('click', () => {
-        profileInfoDiv.style.display = 'none';
-        editFormDiv.style.display = 'block';
-    });
-
-    cancelButton.addEventListener('click', () => {
-        profileInfoDiv.style.display = 'block';
-        editFormDiv.style.display = 'none';
-    });
+    // Client-side form validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
 </script>
 {% endblock %}

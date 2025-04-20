@@ -5,150 +5,180 @@
 
 {% block styles %}
 <style>
-    .signin-page {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        background: linear-gradient(135deg, #f0f2f0 0%, #e0e0e0 100%); /* Soft gradient background */
+    .password-toggle {
+        cursor: pointer;
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
     }
-
-    .card {
-        border: none;
-        border-radius: 1rem;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        overflow: hidden;
-    }
-
-    .card-body {
-        padding: 2rem;
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-label {
-        font-weight: bold;
-        color: #495057;
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-
-    .form-control {
-        display: block;
-        width: 100%;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        color: #495057;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid #ced4da;
-        border-radius: 0.5rem;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-
-    .form-control:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    .password-container {
+        position: relative;
     }
 
     .error-message {
-        color: #dc3545;
+        color: #ef4444;
         font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-        color: #fff;
-        font-weight: 500;
-        border-radius: 0.5rem;
-        padding: 0.8rem 1.5rem;
-        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-    }
-
-    .auth-link {
-        color: #007bff;
-        text-decoration: none;
-    }
-
-    .auth-link:hover {
-        text-decoration: underline;
-    }
-
-    .card-header {
-        background-color: #007bff;
-        color: #fff;
-        padding: 1.2rem;
-        border-radius: 1rem 1rem 0 0;
-        text-align: center;
-        font-weight: bold;
-        font-size: 1.5rem;
-    }
-
-    .card-footer {
-        background-color: rgba(0, 123, 255, 0.1);
-        padding: 1rem;
-        border-radius: 0 0 1rem 1rem;
-        text-align: center;
-        font-size: 0.9rem;
-        color: #6c757d;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="signin-page py-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card">
-                    <div class="card-header">
-                        Sign In to TechToniX
+<div class="container">
+    <div class="row justify-content-center min-vh-100 align-items-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4 p-sm-5">
+                    <div class="text-center mb-4">
+                        <h3 class="card-title mb-2">Welcome Back</h3>
+                        <p class="text-muted">Sign in to continue</p>
                     </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" name="username" placeholder="Your username">
-                                {% if messages %}
-                                    {% for message in messages %}
-                                        {% if message.tags == 'error' and 'username' in message.message|lower %}
-                                            <div class="error-message">{{ message }}</div>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
+
+                    <form id="loginForm" method="POST" novalidate>
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="loginUsername"
+                                name="username"
+                                placeholder="Username"
+                                required
+                                autocomplete="username"
+                            />
+                            <label for="loginUsername">Username</label>
+                            <div class="invalid-feedback">
+                                Please enter your username.
                             </div>
-                            <div class="form-group">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Your password">
-                                {% if messages %}
-                                    {% for message in messages %}
-                                        {% if message.tags == 'error' and 'password' in message.message|lower %}
-                                            <div class="error-message">{{ message }}</div>
-                                        {% elif message.tags == 'error' and 'invalid' in message.message|lower %}
-                                            <div class="error-message">{{ message }}</div>
-                                        {% endif %}
-                                    {% endfor %}
+                            {% for message in messages %}
+                                {% if 'username' in message.tags %}
+                                    <div class="error-message">
+                                        <i class="bx bx-error-circle"></i>
+                                        {{ message }}
+                                    </div>
                                 {% endif %}
+                            {% endfor %}
+                        </div>
+
+
+                        <div class="form-floating mb-3 password-container">
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="loginPassword"
+                                name="password"
+                                placeholder="Password"
+                                required
+                                autocomplete="current-password"
+                            />
+                            <label for="loginPassword">Password</label>
+                            <i
+                                class="bi bi-eye-slash password-toggle"
+                                onclick="togglePassword('loginPassword')"
+                            ></i>
+                            {% for message in messages %}
+                                {% if 'password' in message.tags %}
+                                    <div class="error-message">
+                                        <i class="bx bx-error-circle"></i>
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            <div class="invalid-feedback">Please enter your password</div>
+                        </div>
+
+                        <div
+                            class="d-flex justify-content-between align-items-center mb-3"
+                        >
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="rememberMe"
+                                />
+                                <label class="form-check-label small" for="rememberMe">
+                                    Remember me
+                                </label>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-                        </form>
-                    </div>
-                    <div class="card-footer text-muted">
-                        Don't have an account? <a href="{% url 'authentication:register' %}" class="auth-link">Create Account</a>
-                    </div>
+                            <a
+                                href="#"
+                                class="small text-decoration-none"
+                                >Forgot password?</a
+                            >
+                        </div>
+
+                        <button class="btn btn-primary w-100 py-2" type="submit">
+                            Sign In
+                        </button>
+
+                        <div class="position-relative text-center my-4">
+                            <p class="small text-muted mb-2">Or continue with</p>
+                        </div>
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="#" class="btn btn-outline-secondary">
+                                <i class="bi bi-google"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-secondary">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-secondary">
+                                <i class="bi bi-github"></i>
+                            </a>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <p class="small text-muted">
+                                Don't have an account?
+                                <a
+                                    href="{% url 'authentication:register' %}"
+                                    class="text-decoration-none"
+                                    >Create account</a
+                                >
+                            </p>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Password visibility toggle
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const toggleIcon =
+            field.parentElement.querySelector(".password-toggle");
+        if (field.type === "password") {
+            field.type = "text";
+            toggleIcon.classList.replace("bi-eye-slash", "bi-eye");
+        } else {
+            field.type = "password";
+            toggleIcon.classList.replace("bi-eye", "bi-eye-slash");
+        }
+    }
+
+    // Form validation
+    (function () {
+        "use strict";
+        const form = document.getElementById("loginForm");
+
+        form.addEventListener(
+            "submit",
+            function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add("was-validated");
+            },
+            false
+        );
+    })();
+</script>
 {% endblock %}

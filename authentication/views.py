@@ -3,7 +3,14 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+import re
 
+
+User = get_user_model()
 
 
 @login_required
@@ -39,53 +46,95 @@ def user_profile_page(request):
         return render(request, 'app/profile.html')
 
 
+
 def register(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        password2 = request.POST.get('password2')
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        password = request.POST.get('password', '')
+        password2 = request.POST.get('password2', '')
+        agree_terms = request.POST.get('agree_terms')
 
         errors = {}
 
+        # Username validation
         if not username:
             errors['username'] = 'Username is required.'
+        elif len(username) < 4:
+            errors['username'] = 'Username must be at least 4 characters.'
+        elif not re.match(r'^[\w.@+-]+\Z', username):
+            errors['username'] = 'Enter a valid username. Letters, digits and @/./+/-/_ only.'
+
+        # Email validation
         if not email:
             errors['email'] = 'Email is required.'
         else:
             try:
-                from django.core.validators import validate_email
-                from django.core.exceptions import ValidationError
                 validate_email(email)
             except ValidationError:
                 errors['email'] = 'Enter a valid email address.'
+
+        # Password validation
         if not password:
             errors['password'] = 'Password is required.'
-        elif len(password) < 6:
-            errors['password'] = 'Password must be at least 6 characters long.'
+        else:
+            if len(password) < 8:
+                errors['password'] = 'Password must be at least 8 characters.'
+            if not re.search(r'[A-Z]', password):
+                errors['password'] = 'Password must contain at least one uppercase letter.'
+            if not re.search(r'[a-z]', password):
+                errors['password'] = 'Password must contain at least one lowercase letter.'
+            if not re.search(r'[0-9]', password):
+                errors['password'] = 'Password must contain at least one number.'
+            if not re.search(r'[^A-Za-z0-9]', password):
+                errors['password'] = 'Password must contain at least one special character.'
+
+        # Password confirmation
         if password != password2:
             errors['password2'] = 'Passwords do not match.'
 
+        # Terms agreement
+        if not agree_terms:
+            errors['terms'] = 'You must agree to the terms and conditions.'
+
         if errors:
-            return render(request, 'authentication/register.html', {'errors': errors, 'username': username, 'email': email})
-        else:
-            try:
-                user = User.objects.create_user(username=username, email=email, password=password)
-                messages.success(request, 'Account created successfully! You can now sign in.')
-                return redirect('authentication:SignIn')
-            except IntegrityError as e:
-                if 'unique constraint' in str(e).lower() and 'username' in str(e).lower():
-                    errors['username'] = 'That username is already taken.'
-                elif 'unique constraint' in str(e).lower() and 'email' in str(e).lower():
-                    errors['email'] = 'That email address is already registered.'
-                else:
-                    messages.error(request, f'Error creating account: {e}')
-                return render(request, 'authentication/register.html', {'errors': errors, 'username': username, 'email': email})
-            except Exception as e:
-                messages.error(request, f'An unexpected error occurred: {e}')
-                return render(request, 'authentication/register.html', {'username': username, 'email': email})
-    else:
-        return render(request, 'authentication/register.html')
+            return render(request, 'authentication/register.html', {
+                'errors': errors,
+                'username': username,
+                'email': email
+            })
+
+        try:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password
+            )
+            messages.success(request, '🎉 Account created successfully! You can now sign in.')
+            return redirect('authentication:SignIn')
+            
+        except IntegrityError as e:
+            if 'username' in str(e).lower():
+                errors['username'] = 'Username is already taken.'
+            elif 'email' in str(e).lower():
+                errors['email'] = 'Email is already registered.'
+            else:
+                messages.error(request, '⚠️ Error creating account. Please try again.')
+            
+            return render(request, 'authentication/register.html', {
+                'errors': errors,
+                'username': username,
+                'email': email
+            })
+            
+        except Exception as e:
+            messages.error(request, f'⚠️ Unexpected error: {str(e)}')
+            return render(request, 'authentication/register.html', {
+                'username': username,
+                'email': email
+            })
+
+    return render(request, 'authentication/register.html')
 
 
 

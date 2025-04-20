@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,116 +9,194 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-soft: #e0e7ff;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+
         body {
+            background-color: #f1f5f9;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            background-color: #f8f9fa; 
-            font-family: 'Arial', sans-serif;
         }
+
         .admin-navbar {
-            background-color: #343a40 !important; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background: var(--dark) !important;
+            height: 65px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .admin-navbar .navbar-brand {
-            color: white;
-            font-weight: bold;
-            font-size: 1.5rem;
+
+        .navbar-brand {
+            font-weight: 600;
+            letter-spacing: -0.5px;
         }
-        .admin-navbar .nav-link {
-            color: rgba(255, 255, 255, 0.7);
-            transition: color 0.3s ease;
-            font-size: 1rem;
-        }
-        .admin-navbar .nav-link:hover {
-            color: white;
-        }
-        .admin-container {
-            flex-grow: 1;
-            padding-top: 80px; /* Adjust for fixed navbar height */
-            padding-bottom: 50px; /* Adjust for footer */
-        }
-        .admin-footer {
-            background-color: #212529; /* Darker footer for admin */
-            color: white;
-            padding: 15px 0;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-        }
-        .admin-footer p {
-            margin-bottom: 0;
-        }
-        .navbar-nav.center-nav {
-            width: 100%;
+
+        .nav-link {
             display: flex;
-            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.2s ease;
         }
-        .navbar-nav.center-nav .nav-item {
-            margin: 0 10px; /* Adjust spacing between items */
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(2px);
         }
+
         .dropdown-menu {
-            background-color: #343a40;
             border: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
         }
-        .dropdown-menu .dropdown-item {
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+        }
+
+        .admin-container {
+            flex: 1;
+            padding-top: 80px;
+            padding-bottom: 40px;
+        }
+
+        .admin-footer {
+            background: var(--dark);
             color: white;
+            padding: 1rem;
+            margin-top: auto;
         }
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #495057;
+
+        .nav-link.active {
+            background: var(--primary-soft);
+            color: var(--primary) !important;
         }
-        .dropdown-divider {
-            background-color: rgba(255, 255, 255, 0.2);
+
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: var(--dark);
+                padding: 1rem;
+                margin-top: 1rem;
+                border-radius: 8px;
+            }
+        }
+
+        .theme-switcher {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-switcher:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg admin-navbar fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'management:admin_home' %}">TechToniX Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <a class="navbar-brand text-white" href="{% url 'management:admin_home' %}">
+                <i class='bx bx-cog'></i> TechToniX
+            </a>
+            
+            <div class="d-flex align-items-center gap-3">
+                <div class="theme-switcher text-white" onclick="toggleTheme()">
+                    <i class='bx bx-sun' id="theme-icon"></i>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
+                    <i class='bx bx-menu text-white'></i>
+                </button>
+            </div>
+
             <div class="collapse navbar-collapse" id="adminNavbar">
-                <ul class="navbar-nav center-nav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'management:admin_dashboard' %}">
-                            <i class='bx bx-tachometer'></i> Dashboard
+                        <a class="nav-link text-white {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" 
+                           href="{% url 'management:admin_dashboard' %}">
+                            <i class='bx bx-home'></i> Dashboard
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'management:event_management' %}">
-                            <i class='bx bx-calendar-event'></i> Event Management
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-white dropdown-toggle" href="#" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class='bx bx-calendar'></i> Events
                         </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'management:event_management' %}">
+                                    <i class='bx bx-list-ul'></i> All Events
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class='bx bx-check-circle'></i> Approvals
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'management:admin_ticket_requests' %}">
-                            <i class='bx bx-ticket'></i> Ticket Requests
+                        <a class="nav-link text-white {% if 'ticket' in request.resolver_match.url_name %}active{% endif %}" 
+                           href="{% url 'management:admin_ticket_requests' %}">
+                            <i class='bx bx-receipt'></i> Tickets
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'management:admin_analytics' %}">
-                            <i class='bx bx-bar-chart-alt-2'></i> Analytics
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-white dropdown-toggle" href="#" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class='bx bx-user'></i> Users
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'management:admin_user_management' %}">
-                            <i class='bx bx-group'></i> User Management
-                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'management:admin_user_management' %}">
+                                    <i class='bx bx-group'></i> Manage Users
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'management:admin_analytics' %}">
+                                    <i class='bx bx-bar-chart'></i> Analytics
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
-                <ul class="navbar-nav ms-auto">
+
+                <ul class="navbar-nav ms-3">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bx bx-user-circle"></i> {% if user.is_authenticated %}{{ user.username }}{% else %}Admin{% endif %}
+                        <a class="nav-link text-white dropdown-toggle" href="#" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class='bx bx-user-circle'></i> {{ user.username|default:"Admin" }}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-                            <li><a class="dropdown-item" href="{% url 'management:admin_profile' %}"><i class='bx bx-user'></i> Profile</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'management:admin_profile' %}">
+                                    <i class='bx bx-cog'></i> Profile Settings
+                                </a>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'authentication:logout' %}"><i class='bx bx-log-out'></i> Logout</a></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'authentication:logout' %}">
+                                    <i class='bx bx-log-out'></i> Logout
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -126,17 +204,42 @@
         </div>
     </nav>
 
-    <div class="admin-container container mt-4">
-        {% block content %}
-        {% endblock %}
-    </div>
+    <main class="admin-container container">
+        {% block content %}{% endblock %}
+    </main>
 
     <footer class="admin-footer">
-        <div class="container">
-            <p>&copy; 2025 TechToniX Admin. All rights reserved.</p>
+        <div class="container text-center">
+            <div class="d-flex justify-content-center gap-3 mb-2">
+                <a href="#" class="text-white text-decoration-none">Privacy Policy</a>
+                <a href="#" class="text-white text-decoration-none">Terms of Service</a>
+                <a href="#" class="text-white text-decoration-none">Support</a>
+            </div>
+            <p class="mb-0 small">&copy; 2025 TechToniX. All rights reserved</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleTheme() {
+            const htmlEl = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (htmlEl.getAttribute('data-bs-theme') === 'dark') {
+                htmlEl.setAttribute('data-bs-theme', 'light');
+                themeIcon.className = 'bx bx-sun';
+            } else {
+                htmlEl.setAttribute('data-bs-theme', 'dark');
+                themeIcon.className = 'bx bx-moon';
+            }
+        }
+
+        // Add active class to current page link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if(link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    </script>
 </body>
 </html>

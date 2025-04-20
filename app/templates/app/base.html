@@ -1,117 +1,212 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Event Registration{% endblock %}</title>
+    <title>{% block title %}TechToniX Events{% endblock %}</title>
 
+    <!-- Core CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
-    />
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        
+        .translate-center-x {
+            transform: translateX(-50%);
+        }
+        
+        .avatar-placeholder {
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-placeholder:hover {
+            background-color: #f8f9fa !important;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-soft: #e0e7ff;
+            --primary-hover: #4f46e5;
+            --success: #22c55e;
+            --secondary: #64748b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+        }
+
         body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
-        .navbar-nav .nav-link {
-            font-weight: bold;
+
+        .navbar {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
             font-size: 1.5rem;
-            transition: color 0.3s ease;
         }
-        .navbar-nav .nav-link:hover {
-            color: yellow;
-        }
-        .navbar-nav .bx-user-circle,
-        .navbar-nav .dropdown-toggle {
-            font-size: 1.8rem;
-        }
-        .navbar-nav .nav-item {
-            margin: 0 10px;
-        }
-        .nav-center {
-            width: 100%;
+
+        .nav-link {
             display: flex;
-            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9) !important;
+            transition: all 0.2s ease;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px;
         }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white !important;
+            transform: translateY(-1px);
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+        }
+
         .footer {
-            background-color: #343a40;
+            background: var(--dark);
             color: white;
-            padding: 20px 0;
-            text-align: center;
-            /*margin-top: auto;  Push the footer to the bottom */
+            margin-top: auto;
+            padding: 3rem 0 1.5rem;
         }
+
         .footer a {
-            color: white;
-            font-size: 1.8rem;
-            margin: 0 15px;
-            transition: color 0.3s ease;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.2s ease;
         }
+
         .footer a:hover {
-            color: yellow;
+            color: white;
         }
-        .footer p {
-            margin-top: 10px;
-            font-size: 1rem;
-        }
-        .container.mt-4 {
+
+        .container. {
             flex-grow: 1; /* Allow the content container to grow and take up available space */
         }
+
+        .alert-position {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+        }
+
+        .animate__fadeInUp {
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-collapse {
+                background: var(--dark);
+                margin-top: 1rem;
+                padding: 1rem;
+                border-radius: 8px;
+            }
+        }
     </style>
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'app:home' %}">TechToniX</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand" href="{% url 'app:home' %}">
+                <i class='bx bx-rocket'></i> TechToniX
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav nav-center">
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class='bx bx-calendar'></i> Events
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">
+                                <i class='bx bx-list-ul'></i> All Events
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class='bx bx-star'></i> Featured
+                            </a></li>
+                            <li><a class="dropdown-item" href="#">
+                                <i class='bx bx-category'></i> Categories
+                            </a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
-                            <i class='bx bx-laptop'></i> Tech
+                            <i class='bx bx-group'></i> Community
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
-                            <i class='bx bx-briefcase'></i> Business
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class='bx bx-music'></i> Music
+                            <i class='bx bx-help-circle'></i> Support
                         </a>
                     </li>
                 </ul>
-                <ul class="navbar-nav ms-auto">
+
+                <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bx bx-user-circle"></i>
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class='bx bx-user-circle'></i> {{ user.username }}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{% url 'app:attendee_dashboard' %}">Dashboard</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'app:attendee_dashboard' %}">
+                                    <i class='bx bx-chart'></i> Dashboard
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'app:upcoming_events' %}">
+                                    <i class='bx bx-calendar-check'></i> My Events
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'authentication:profile' %}">
+                                    <i class='bx bx-cog'></i> Profile Settings
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'authentication:profile' %}">Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'app:upcoming_events' %}">Upcoming Events</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Notifications</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item btn btn-danger" href="{% url 'authentication:logout' %}">Logout</a></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'authentication:logout' %}">
+                                    <i class='bx bx-log-out'></i> Logout
+                                </a></li>
                             </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'authentication:SignIn' %}">
-                                <i class="bx bx-user-circle"></i>
+                            <a class="btn btn-outline-light" href="{% url 'authentication:SignIn' %}">
+                                <i class='bx bx-log-in'></i> Sign In
                             </a>
                         </li>
                     {% endif %}
@@ -120,27 +215,91 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-        {% block content %}
-        {% endblock %}
+    <!-- Dynamic Alerts -->
+    {% if messages %}
+    <div class="alert-position">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-lg" role="alert">
+            <div class="d-flex align-items-center gap-2">
+                <i class='bx 
+                    {% if message.tags == 'success' %}bx-check-circle
+                    {% elif message.tags == 'error' %}bx-error
+                    {% else %}bx-info-circle{% endif %}
+                '></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+        {% endfor %}
     </div>
+    {% endif %}
+
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 EventRegistration. All rights reserved.</p>
-            <a href="#"><i class="bx bxl-facebook"></i></a>
-            <a href="#"><i class="bx bxl-twitter"></i></a>
-            <a href="#"><i class="bx bxl-instagram"></i></a>
-            <a href="#"><i class="bx bxl-linkedin"></i></a>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="mb-3">About TechToniX</h5>
+                    <p class="text-muted">Connecting tech enthusiasts through innovative events and conferences worldwide.</p>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="#">Upcoming Events</a>
+                        <a href="#">Speaker Directory</a>
+                        <a href="#">Venue Information</a>
+                        <a href="#">FAQ</a>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="mb-3">Stay Connected</h5>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="h3 mb-0"><i class='bx bxl-twitter'></i></a>
+                        <a href="#" class="h3 mb-0"><i class='bx bxl-linkedin'></i></a>
+                        <a href="#" class="h3 mb-0"><i class='bx bxl-instagram'></i></a>
+                        <a href="#" class="h3 mb-0"><i class='bx bxl-youtube'></i></a>
+                    </div>
+                    <div class="mt-4">
+                        <h6>Newsletter</h6>
+                        <form class="input-group">
+                            <input type="email" class="form-control" placeholder="Enter your email">
+                            <button class="btn btn-primary" type="button">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center text-muted">
+                <p class="mb-0 small">&copy; 2025 TechToniX. All rights reserved</p>
+            </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize Bootstrap components
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
 
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(() => {
+                document.querySelectorAll('.alert').forEach(alert => {
+                    new bootstrap.Alert(alert).close();
+                });
+            }, 5000);
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -3,149 +3,327 @@
 {% block title %}Admin Dashboard - TechToniX{% endblock %}
 
 {% block content %}
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <h1 class="mb-4">Admin Dashboard</h1>
+<main class="admin-container container">
+    <div class="dashboard-header mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-0">Dashboard Overview</h1>
+                <p class="text-muted mb-0">Welcome back, {{ user.username }}. Last login: 2 hours ago</p>
             </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card shadow-sm bg-primary text-white">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class='bx bx-calendar-event'></i> Events Overview</h5>
-                        <div class="d-flex justify-content-around align-items-center">
-                            <div>
-                                <h6 class="text-white">Total</h6>
-                                <h3 class="text-white">{{ total_events|default:0 }}</h3>
-                            </div>
-                            <div>
-                                <h6 class="text-white">Approved</h6>
-                                <h3 class="text-white">{{ approved_events|default:0 }}</h3>
-                            </div>
-                            <div>
-                                <h6 class="text-white">Pending</h6>
-                                <h3 class="text-white">{{ pending_events|default:0 }}</h3>
-                            </div>
-                            <div>
-                                <h6 class="text-white">Rejected</h6>
-                                <h3 class="text-white">{{ rejected_events|default:0 }}</h3>
-                            </div>
-                        </div>
-                        <a href="{% url 'management:event_management' %}" class="btn btn-sm btn-light mt-3">View All Events</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm bg-success text-white">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class='bx bx-group'></i> User Statistics</h5>
-                        <div>
-                            <h6 class="text-white">Total Users</h6>
-                            <h3 class="text-white">{{ total_users|default:0 }}</h3>
-                        </div>
-                        <div>
-                            <h6 class="text-white">New Users (Last 30 Days)</h6>
-                            <h3 class="text-white">{{ new_users_30_days|default:0 }}</h3>
-                        </div>
-                        <a href="{% url 'management:admin_user_management' %}" class="btn btn-sm btn-light mt-3">Manage Users</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm bg-warning text-white">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class='bx bx-ticket'></i> Ticket Requests</h5>
-                        <div>
-                            <h6 class="text-white">Total Requests</h6>
-                            <h3 class="text-white">{{ total_ticket_requests|default:0 }}</h3>
-                        </div>
-                        <div>
-                            <h6 class="text-white">Open Requests</h6>
-                            <h3 class="text-white">{{ open_ticket_requests|default:0 }}</h3>
-                        </div>
-                        <div>
-                            <h6 class="text-white">Approved Requests</h6>
-                            <h3 class="text-white">{{ approved_ticket_requests|default:0 }}</h3>
-                        </div>
-                        <div>
-                            <h6 class="text-white">Rejected Requests</h6>
-                            <h3 class="text-white">{{ rejected_ticket_requests|default:0 }}</h3>
-                        </div>
-                        <a href="{% url 'management:admin_ticket_requests' %}" class="btn btn-sm btn-light mt-3">View Requests</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card shadow-sm bg-info text-white">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class='bx bx-bell'></i> Recent Activity</h5>
-                        {% if recent_activity %}
-                            <ul class="list-group list-group-flush">
-                                {% for activity in recent_activity %}
-                                    <li class="list-group-item bg-info text-white">{{ activity.message }} <small class="text-white">- {{ activity.timestamp|timesince }} ago</small></li>
-                                {% empty %}
-                                    <li class="list-group-item bg-info text-white">No recent activity to display.</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-white">No recent activity to display.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card shadow-sm bg-danger text-white">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class='bx bx-check-circle'></i> Event Approval Queue</h5>
-                        {% if pending_events_list %}
-                            <ul class="list-group list-group-flush">
-                                {% for event in pending_events_list %}
-                                    <li class="list-group-item bg-danger text-white d-flex justify-content-between align-items-center">
-                                        {{ event.name }} - {{ event.organizer.username }}
-                                        <div>
-                                            <a href="{% url 'management:admin_event_approve' event.id %}" class="btn btn-sm btn-light"><i class='bx bx-check'></i> Approve</a>
-                                            <a href="{% url 'management:admin_event_reject' event.id %}" class="btn btn-sm btn-light"><i class='bx bx-x'></i> Reject</a>
-                                        </div>
-                                    </li>
-                                {% empty %}
-                                    <li class="list-group-item bg-danger text-white">No events pending approval.</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-white">No events pending approval.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card shadow-sm bg-dark text-white">
-            <div class="card-body">
-                <h5 class="card-title"><i class='bx bx-envelope-open'></i> Ticket Request Queue</h5>
-                {% if open_ticket_requests_list %}
-                    <ul class="list-group list-group-flush">
-                        {% for request in open_ticket_requests_list %}
-                            <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
-                                {{ request.user.username }} - {{ request.event.name }} ({{ request.quantity }} tickets)
-                                <div>
-                                    <a href="{% url 'management:admin_ticket_request_approve' request.id %}" class="btn btn-sm btn-light"><i class='bx bx-check'></i> Approve</a>
-                                    <a href="{% url 'management:admin_ticket_request_reject' request.id %}" class="btn btn-sm btn-light"><i class='bx bx-x'></i> Reject</a>
-                                    <a href="{% url 'management:admin_ticket_request_details' request.id %}" class="btn btn-sm btn-light"><i class='bx bx-info-circle'></i> Details</a>
-                                </div>
-                            </li>
-                        {% empty %}
-                            <li class="list-group-item bg-dark text-white">No open ticket requests.</li>
-                        {% endfor %}
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary">
+                    <i class='bx bx-plus'></i> New Event
+                </button>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown">
+                        <i class='bx bx-filter'></i> Filters
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Last 7 days</a></li>
+                        <li><a class="dropdown-item" href="#">Last 30 days</a></li>
+                        <li><a class="dropdown-item" href="#">Custom Range</a></li>
                     </ul>
-                {% else %}
-                    <p class="text-white">No open ticket requests.</p>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="row g-4 mb-5">
+        <!-- Events Card -->
+        <div class="col-xxl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-0 text-uppercase text-muted small fw-bold">Total Events</h6>
+                            <h2 class="mb-0">{{ total_events|default:0 }}</h2>
+                        </div>
+                        <div class="icon-box bg-primary">
+                            <i class='bx bx-calendar-event'></i>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                             style="width: {{ approved_events_percent }}%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small mt-2">
+                        <span class="text-muted">{{ approved_events|default:0 }} approved</span>
+                        <span class="text-muted">{{ pending_events|default:0 }} pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Card -->
+        <div class="col-xxl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-0 text-uppercase text-muted small fw-bold">User Activity</h6>
+                            <h2 class="mb-0">{{ total_users|default:0 }}</h2>
+                        </div>
+                        <div class="icon-box bg-success">
+                            <i class='bx bx-user'></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-success-subtle text-success">
+                            +{{ new_users_30_days|default:0 }} new
+                        </span>
+                        <span class="badge bg-warning-subtle text-warning">
+                            {{ active_users_7_days|default:0 }} active
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tickets Card -->
+        <div class="col-xxl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-0 text-uppercase text-muted small fw-bold">Ticket Sales</h6>
+                            <h2 class="mb-0">{{ total_tickets|default:0 }}</h2>
+                        </div>
+                        <div class="icon-box bg-warning">
+                            <i class='bx bx-ticket'></i>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <small class="text-muted">Approved</small>
+                            <div class="h5 mb-0">{{ approved_ticket_requests|default:0 }}</div>
+                        </div>
+                        <div>
+                            <small class="text-muted">Pending</small>
+                            <div class="h5 mb-0">{{ open_ticket_requests|default:0 }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Card 
+        <div class="col-xxl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-0 text-uppercase text-muted small fw-bold">Revenue</h6>
+                            <h2 class="mb-0">${{ total_revenue|default:"0"|floatformat:2 }}</h2>
+                        </div>
+                        <div class="icon-box bg-danger">
+                            <i class='bx bx-dollar'></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-success-subtle text-success">
+                            <i class='bx bx-up-arrow-alt'></i> 12% vs last month
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+
+
+    <!-- Charts Section -->
+    <div class="row g-4 mb-4">
+        <!-- Main Chart -->
+        <div class="col-xxl-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Activity Overview</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-link text-muted p-0" type="button" 
+                                    data-bs-toggle="dropdown">
+                                <i class='bx bx-dots-vertical-rounded'></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Last 7 days</a></li>
+                                <li><a class="dropdown-item" href="#">Last 30 days</a></li>
+                                <li><a class="dropdown-item" href="#">Year to date</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="activityChart" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Types Distribution -->
+        <div class="col-xxl-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Event Categories</h5>
+                    <div id="eventTypeChart" style="height: 300px;"></div>
+                    <div class="mt-3" id="chartLegend"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats & Tables -->
+    <div class="row g-4">
+        <!-- Recent Registrations -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0">Recent Registrations</h5>
+                        <a href="#" class="btn btn-sm btn-outline-secondary">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Event</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for registration in recent_registrations %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-sm">
+                                                <div class="avatar-title bg-light rounded-circle">
+                                                    {{ registration.user.username|first }}
+                                                </div>
+                                            </div>
+                                            {{ registration.user.username }}
+                                        </div>
+                                    </td>
+                                    <td>{{ registration.event.name|truncatechars:20 }}</td>
+                                    <td>{{ registration.date_registered|date:"M d" }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ registration.status_color }}-subtle 
+                                              text-{{ registration.status_color }}">
+                                            {{ registration.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">System Status</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                                <div class="icon-box bg-success">
+                                    <i class='bx bx-server'></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small">API Response</div>
+                                    <div class="h4 mb-0">98.7%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                                <div class="icon-box bg-warning">
+                                    <i class='bx bx-cloud'></i>
+                                </div>
+                                <div>
+                                    <div class="text-muted small">Storage</div>
+                                    <div class="h4 mb-0">64% Used</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="alert alert-warning mb-0">
+                                <i class='bx bx-time-five'></i> Scheduled maintenance: 
+                                Saturday 2:00-4:00 AM UTC
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Charting Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    // Activity Chart
+    const activityOptions = {
+        series: [{
+            name: 'Registrations',
+            data: [28, 40, 36, 52, 38, 60, 55]
+        }, {
+            name: 'Tickets Sold',
+            data: [35, 45, 30, 50, 42, 55, 60]
+        }],
+        chart: { type: 'area', height: 300 },
+        colors: ['var(--primary)', 'var(--success)'],
+        xaxis: { categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+        stroke: { curve: 'smooth' },
+        tooltip: { theme: document.documentElement.getAttribute('data-bs-theme') }
+    };
+
+    const activityChart = new ApexCharts(document.querySelector("#activityChart"), activityOptions);
+    activityChart.render();
+
+    // Event Type Chart
+    const eventTypeOptions = {
+        series: [45, 25, 20, 10],
+        chart: { type: 'donut', height: 300 },
+        labels: ['Technology', 'Business', 'Arts', 'Other'],
+        colors: ['var(--primary)', 'var(--success)', 'var(--warning)', 'var(--danger)'],
+        legend: { show: false },
+        plotOptions: { pie: { donut: { size: '65%' } } },
+        dataLabels: { enabled: false }
+    };
+
+    const eventTypeChart = new ApexCharts(document.querySelector("#eventTypeChart"), eventTypeOptions);
+    eventTypeChart.render();
+</script>
+
+<style>
+    .avatar-sm {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: var(--bs-card-bg);
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+    }
+
+    .progress {
+        background-color: var(--bs-secondary-bg);
+    }
+
+    .table-hover tbody tr {
+        transition: background-color 0.2s ease;
+    }
+</style>
 {% endblock %}

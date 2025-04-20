@@ -6,27 +6,80 @@
 {% block content %}
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg">
-                <img src="{{ event.event_image.url }}" class="card-img-top" alt="{{ event.title }}" style="max-height: 300px; object-fit: cover;">
-                <div class="card-body p-4">
-                    <h2 class="card-title mb-3">{{ event.title }}</h2>
-                    <p class="card-text"><i class="bi bi-calendar-event me-2"></i> Date: {{ event.date|date:"F j, Y" }}</p>
-                    <p class="card-text"><i class="bi bi-clock me-2"></i> Time: {{ event.time|time:"g:i A" }}</p>
-                    <p class="card-text"><i class="bi bi-geo-alt me-2"></i> Location: {{ event.location }}</p>
-                    <p class="card-text mb-3">{{ event.description|linebreaksbr }}</p>
-                    <p class="card-text">
-                        <i class="bi bi-person-fill me-2"></i> Organizer:
-                        {% if event.organizer %}
-                            {{ event.organizer.username }}
-                        {% else %}
-                            N/A
-                        {% endif %}
-                    </p>
-                    <div class="d-flex justify-content-between align-items-center mt-4">
-                        <a href="{% url 'app:home' %}" class="btn btn-secondary"><i class="bi bi-arrow-left me-2"></i> Back to Events</a>
-                        <button class="btn btn-primary"><i class="bi bi-ticket me-2"></i> Register Now</button>
+        <div class="col-lg-10">
+            <div class="card border-0 overflow-hidden shadow-lg" style="border-radius: 1.5rem;">
+                <div class="card-img-top position-relative overflow-hidden">
+                    <img src="{{ event.event_image.url }}" class="img-fluid w-100 hover-zoom" alt="{{ event.title }}" style="height: 400px; object-fit: cover;">
+                    <div class="position-absolute bottom-0 start-0 w-100 p-4 gradient-overlay">
+                        <h1 class="text-white display-5 fw-bold mb-3">{{ event.title }}</h1>
+                    </div>
+                </div>
+                
+                <div class="card-body p-5">
+                    <div class="row g-4">
+                        <!-- Event Details -->
+                        <div class="col-md-8">
+                            <h3 class="mb-4 text-gradient-primary">Event Details</h3>
+                            <div class="d-grid gap-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-circle bg-primary me-3">
+                                        <i class="bi bi-calendar-event text-white fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Date & Time</h5>
+                                        <p class="mb-0 text-muted">{{ event.date|date:"F j, Y" }} at {{ event.time|time:"g:i A" }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-circle bg-danger me-3">
+                                        <i class="bi bi-geo-alt text-white fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Location</h5>
+                                        <p class="mb-0 text-muted">{{ event.location }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-circle bg-warning me-3">
+                                        <i class="bi bi-person-badge text-white fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Organizer</h5>
+                                        <p class="mb-0 text-muted">
+                                            {% if event.organizer %}
+                                                {{ event.organizer.username }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Action Card -->
+                        <div class="col-md-4">
+                            <div class="bg-light p-4 rounded-3 shadow-sm">
+                                <h5 class="mb-3">Secure Your Spot</h5>
+                                <button class="btn btn-gradient-primary w-100 py-3 mb-3">
+                                    <i class="bi bi-ticket-perforated me-2"></i>Register Now
+                                </button>
+                                <a href="{% url 'app:home' %}" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-arrow-left me-2"></i>All Events
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description Section -->
+                    <div class="mt-5">
+                        <h3 class="mb-4 text-gradient-primary">About the Event</h3>
+                        <div class="lead text-muted lh-lg">
+                            {{ event.description|linebreaksbr }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -34,23 +87,64 @@
 </div>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-    .card-title {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #333;
+    :root {
+        --gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
     }
-    .card-text {
+    
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .text-gradient-primary {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .gradient-overlay {
+        background: linear-gradient(transparent 10%, rgba(0,0,0,0.7) 90%);
+    }
+    
+    .icon-circle {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-gradient-primary {
+        background: var(--gradient-primary);
+        border: none;
+        color: white;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .btn-gradient-primary:hover {
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+    
+    .hover-zoom {
+        transition: transform 0.3s ease;
+    }
+    
+    .hover-zoom:hover {
+        transform: scale(1.03);
+    }
+    
+    .lead {
         font-size: 1.1rem;
-        color: #555;
+        line-height: 1.7;
     }
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-    .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
+    
+    .shadow-lg {
+        box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important;
     }
 </style>
 {% endblock %}

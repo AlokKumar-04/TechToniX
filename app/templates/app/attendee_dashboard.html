@@ -4,192 +4,166 @@
 {% block title %}Attendee Dashboard - TechToniX{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h2>Attendee Dashboard</h2>
-
-    <div class="my-4">
-        <h3>Quick Actions</h3>
-        <div class="d-flex flex-wrap gap-2">
-            {% if request.user.is_event_organizer %}
-            <a href="{% url 'event:create' %}" class="btn btn-primary">Create New Event</a>
-            {% endif %}
-            <a href="{% url 'app:view_registrations' %}" class="btn btn-secondary">View Registrations</a>
-            <a href="{% url 'authentication:profile' %}" class="btn btn-info">Manage Profile</a>
-            <a href="{% url 'app:upcoming_events' %}" class="btn btn-success">Upcoming Events</a>
+<div class="container py-5">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header mb-5">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-5 fw-bold text-gradient-primary">Welcome Back, {{ request.user.username }}</h1>
+                <p class="lead text-muted">Your event journey at a glance</p>
+            </div>
+            <div class="avatar">
+                <img src="{% static 'images/avatar-placeholder.svg' %}" class="rounded-circle" width="80" height="80" alt="Profile">
+            </div>
         </div>
     </div>
 
-    <div id="registrations-list">
+    <!-- Quick Actions Grid -->
+    <div class="row g-4 mb-6">
+        <div class="col-12">
+            <h3 class="h4 fw-bold mb-4"><i class='bx bx-rocket me-2'></i>Quick Actions</h3>
+            <div class="row g-3">
+                {% if request.user.is_event_organizer %}
+                <div class="col-xl-3 col-md-6">
+                    <a href="{% url 'event:create' %}" class="card action-card bg-gradient-primary text-white hover-scale">
+                        <div class="card-body">
+                            <i class='bx bx-plus-medical display-6 mb-3'></i>
+                            <h5 class="card-title">Create Event</h5>
+                            <p class="small opacity-75">Launch your new tech event</p>
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+                <div class="col-xl-3 col-md-6">
+                    <a href="{% url 'app:view_registrations' %}" class="card action-card bg-light hover-scale">
+                        <div class="card-body">
+                            <i class='bx bx-calendar-check display-6 mb-3 text-primary'></i>
+                            <h5 class="card-title">Registrations</h5>
+                            <p class="small text-muted">Manage your event bookings</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <a href="{% url 'authentication:profile' %}" class="card action-card bg-light hover-scale">
+                        <div class="card-body">
+                            <i class='bx bx-user-circle display-6 mb-3 text-info'></i>
+                            <h5 class="card-title">Profile</h5>
+                            <p class="small text-muted">Update personal information</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <a href="{% url 'app:upcoming_events' %}" class="card action-card bg-light hover-scale">
+                        <div class="card-body">
+                            <i class='bx bx-calendar-event display-6 mb-3 text-success'></i>
+                            <h5 class="card-title">Events</h5>
+                            <p class="small text-muted">Browse upcoming events</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="row mt-4 g-5">
+        <!-- Upcoming Events -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h3 class="h5 fw-bold mb-0"><i class='bx bx-list-ul me-2'></i>Recent Registrations</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <!-- Sample Registration Item 
+                        <div class="list-group-item border-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <img src="{% static 'images/event-thumbnail.jpg' %}" 
+                                         class="rounded-2" 
+                                         width="80" 
+                                         alt="Event thumbnail">
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5 class="mb-1">Tech Conference 2024</h5>
+                                    <p class="mb-0 text-muted small">
+                                        <span class="me-3">Feb 15, 2024</span>
+                                        <span class="badge bg-success">Confirmed</span>
+                                    </p>
+                                </div>
+                                <a href="#" class="btn btn-link text-decoration-none">
+                                    Details <i class='bx bx-chevron-right'></i>
+                                </a>
+                            </div>
+                        </div>
+                         Repeat for other registrations -->
+                    </div>
+                </div>
+            </div>
         </div>
 
-    <div id="notifications-list">
+        <!-- Notifications & Updates -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h3 class="h5 fw-bold mb-0"><i class='bx bx-bell me-2'></i>Notifications</h3>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <!-- Sample Notification 
+                        <div class="list-group-item border-0 py-2">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class='bx bx-party text-warning fs-5'></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p class="mb-0 small">Your registration for AI Summit was confirmed</p>
+                                    <small class="text-muted">2 hours ago</small>
+                                </div>
+                            </div>
+                        </div>
+                         Repeat for other notifications -->
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const registrationsList = document.getElementById('registrations-list');
 
-        function fetchRegistrations() {
-            fetch('/api/attendee/registrations/')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    registrationsList.innerHTML = ''; // Clear loading message
-
-                    if (data.length > 0) {
-                        const ul = document.createElement('ul');
-                        ul.classList.add('list-group');
-
-                        data.forEach(registration => {
-                            const li = document.createElement('li');
-                            li.classList.add('list-group-item');
-
-                            // Format registration date
-                            const registrationDate = new Date(registration.registration_date).toLocaleString();
-
-                            li.innerHTML = `
-                                <strong>${registration.event.title}</strong> - ${registration.event.date}
-                                <br>
-                                Status: ${registration.status.charAt(0).toUpperCase() + registration.status.slice(1)}
-                                <br>
-                                Registration Date: ${registrationDate}
-                                <br>
-                                ${registration.status === 'active' ? `
-                                    <a href="/event/${registration.event.id}/" class="btn btn-primary btn-sm mt-2">View Event Details</a>
-                                    <button class="btn btn-danger btn-sm mt-2 cancel-registration" data-registration-id="${registration.id}">Cancel Registration</button>
-                                ` : ''}
-                            `;
-                            ul.appendChild(li);
-                        });
-                        registrationsList.appendChild(ul);
-                    } else {
-                        registrationsList.innerHTML = '<p>You have not booked any events yet.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching registrations:', error);
-                    registrationsList.innerHTML = '<p>Error loading registrations.</p>';
-                });
-        }
-
-        fetchRegistrations(); // Initial fetch
-
-        // Add event listener for cancel registration buttons
-        document.addEventListener('click', (event) => {
-            if (event.target.classList.contains('cancel-registration')) {
-                const registrationId = event.target.dataset.registrationId;
-
-                fetch(`/api/registrations/${registrationId}/cancel/`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
-                    },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Update the UI to reflect the cancellation
-                    fetchRegistrations(); // Refresh registrations list
-                })
-                .catch(error => {
-                    console.error('Error cancelling registration:', error);
-                    alert('Failed to cancel registration.');
-                });
-            }
-        });
-
-        // Function to get CSRF token from cookies
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-    });
-
-    // Example, add this to the attendee_dashboard.html
-
-function fetchNotifications() {
-    fetch('/api/notifications/')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            const notificationsList = document.getElementById('notifications-list');
-            notificationsList.innerHTML = '';
-
-            if (data.length > 0) {
-                const ul = document.createElement('ul');
-                ul.classList.add('list-group');
-
-                data.forEach(notification => {
-                    const li = document.createElement('li');
-                    li.classList.add('list-group-item');
-                    li.innerHTML = `
-                        ${notification.message} - ${new Date(notification.timestamp).toLocaleString()}
-                        ${notification.is_read ? '' : `<button class="btn btn-sm btn-secondary mark-read" data-notification-id="${notification.id}">Mark as Read</button>`}
-                    `;
-                    ul.appendChild(li);
-                });
-                notificationsList.appendChild(ul);
-            } else {
-                notificationsList.innerHTML = '<p>No notifications.</p>';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching notifications:', error);
-            document.getElementById('notifications-list').innerHTML = '<p>Error loading notifications.</p>';
-        });
-}
-
-// Add event listener for mark as read buttons
-document.addEventListener('click', (event) => {
-    if (event.target.classList.contains('mark-read')) {
-        const notificationId = event.target.dataset.notificationId;
-
-        fetch(`/api/notifications/${notificationId}/read/`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken'),
-            },
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            fetchNotifications(); // Refresh notifications list
-        })
-        .catch(error => {
-            console.error('Error marking notification as read:', error);
-            alert('Failed to mark notification as read.');
-        });
+<style>
+    .text-gradient-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
-});
 
-fetchNotifications(); // Initial fetch
-</script>
+    .action-card {
+        border: none;
+        transition: all 0.3s ease;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none !important;
+    }
+
+    .hover-scale {
+        transition: transform 0.3s ease;
+    }
+
+    .hover-scale:hover {
+        transform: translateY(-5px);
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+
+    .dashboard-header {
+        padding: 2rem;
+        background: rgba(255,255,255,0.9);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+</style>
 {% endblock %}

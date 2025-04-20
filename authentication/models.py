@@ -2,13 +2,7 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 
 class CustomUser(AbstractUser):
-    ROLE_CHOICES = [
-        ('organizer', 'Event Organizer'),
-        ('attendee', 'Event Attendee'),
-        ('admin', 'Admin'),
-    ]
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='attendee')
-    bio = models.TextField(blank=True, null=True)  
+    bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
 
     groups = models.ManyToManyField(
@@ -27,4 +21,4 @@ class CustomUser(AbstractUser):
     )
 
     def __str__(self):
-        return f"{self.username} ({self.get_role_display()})"
+        return self.username
