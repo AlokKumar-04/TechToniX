@@ -13,7 +13,13 @@
                 <p class="lead text-muted">Your event journey at a glance</p>
             </div>
             <div class="avatar">
-                <img src="{% static 'images/avatar-placeholder.svg' %}" class="rounded-circle" width="80" height="80" alt="Profile">
+                {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" class="rounded-circle" width="80" height="80" alt="Profile">
+                {% else %}
+                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-person fs-1 text-white"></i>
+                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

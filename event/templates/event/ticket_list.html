@@ -1,0 +1,38 @@
+{% extends 'management/base.html' %}
+
+{% block content %}
+    <h2>Tickets for {{ event.name }}</h2>
+    {% if tickets %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Quantity Available</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                    <tr>
+                        <td>{{ ticket.name }}</td>
+                        <td>{{ ticket.description }}</td>
+                        <td>{{ ticket.price }}</td>
+                        <td>{{ ticket.quantity_available }}</td>
+                        <td>{{ ticket.get_status_display }}</td>
+                        <td>
+                            <a href="{% url 'event:update_ticket' ticket.id %}" class="btn btn-sm btn-primary">Update</a>
+                            <a href="{% url 'event:delete_ticket' ticket.id %}" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No tickets available for this event.</p>
+    {% endif %}
+    <a href="{% url 'event:create_ticket' event_id=event.id %}" class="btn btn-success">Create New Ticket</a>
+    <a href="{% url 'management:event_management' %}" class="btn btn-secondary">Back to Event Management</a>
+{% endblock %}

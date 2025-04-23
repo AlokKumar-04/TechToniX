@@ -15,35 +15,54 @@ User = get_user_model()
 
 @login_required
 def user_profile_page(request):
+    """
+    View function for displaying and updating the user's profile page.
+
+    Handles both GET requests (displaying the profile) and POST requests
+    (updating the profile).
+    """
+    User = get_user_model() # Get the user model
     if request.method == 'POST':
+        # Process the form submission to update user data
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         bio = request.POST.get('bio')
-        profile_picture = request.FILES.get('profile_picture')
+        profile_picture = request.FILES.get('profile_picture')  # Get the uploaded file
 
-        errors = {}
+        errors = {}  # Dictionary to store validation errors
+
+        # Basic validation: Check for required fields
         if not first_name:
             errors['first_name'] = 'First name is required.'
         if not last_name:
             errors['last_name'] = 'Last name is required.'
 
         if errors:
+            # If there are errors, re-render the form with the error messages
             return render(request, 'authentication/profile.html', {'errors': errors})
         else:
             try:
-                request.user.first_name = first_name
-                request.user.last_name = last_name
-                request.user.bio = bio
+                # Update the user's attributes
+                user = request.user
+                user.first_name = first_name
+                user.last_name = last_name
+                user.bio = bio
                 if profile_picture:
-                    request.user.profile_picture = profile_picture
-                request.user.save()
+                    user.profile_picture = profile_picture  # Assign the uploaded file
+
+                user.save()  # Save the changes to the database
                 messages.success(request, 'Profile updated successfully!')
-                return redirect('authentication:profile')
+                return redirect('authentication:profile')  # Redirect to the profile page
             except Exception as e:
+                # Handle any exceptions that occur during the update process
                 messages.error(request, f'There was an error updating your profile: {e}')
                 return render(request, 'authentication/profile.html', {'errors': {'non_field_errors': [f'Error: {e}']}})
     else:
-        return render(request, 'app/profile.html')
+        # For a GET request, render the profile page with the user's data
+        # Pass the user object to the template context
+        user = request.user
+        return render(request, 'app/profile.html', {'user': user})
+
 
 
 

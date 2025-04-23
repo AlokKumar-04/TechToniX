@@ -1,54 +1,235 @@
 {% extends 'management/base.html' %}
+{% load static %}
 
 {% block content %}
-<h2>Create New Event</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    <div>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap');
+
+    .compact-form {
+        font-family: 'Inter', sans-serif;
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .form-header h2 {
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #404040;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+
+    .datetime-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .file-upload {
+        border: 2px dashed #e0e0e0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .file-upload:hover {
+        border-color: #6366f1;
+        background: rgba(99, 102, 241, 0.03);
+    }
+
+    .submit-btn {
+        background: #6366f1;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        width: 100%;
+        transition: all 0.2s ease;
+        margin-top: 1.5rem;
+    }
+
+    .submit-btn:hover {
+        background: #4f46e5;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 768px) {
+        .compact-form {
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+        
+        .datetime-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="compact-form">
+    <div class="form-header">
+        <h2>Create New Event</h2>
+        <p class="text-muted">Fill in the details to create your event</p>
     </div>
-    <div>
-        <label for="description">Description:</label>
-        <textarea id="description" name="description"></textarea>
-    </div>
-    <div>
-        <label for="date">Date and Time:</label>
-        <input type="datetime-local" id="date" name="date" required>
-    </div>
-    <div>
-        <label for="location">Location:</label>
-        <input type="text" id="location" name="location" required>
-    </div>
-    <div>
-        <label for="category">Category:</label>
-        <select id="category" name="category">
-            <option value="tech">Tech</option>
-            <option value="music">Music</option>
-            <option value="business">Business</option>
-            </select>
-    </div>
-    <div>
-        <label for="event_image">Event Image:</label>
-        <input type="file" id="event_image" name="event_image">
-    </div>
-    <div>
-        <label for="status">Status:</label>
-        <select id="status" name="status">
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="inactive">Inactive</option>
-            <option value="cancelled">Cancelled</option>
-            <option value="archived">Archived</option>
-        </select>
-    </div>
-    <button type="submit">Create Event</button>
-</form>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Event Name -->
+        <div class="form-group">
+            <label class="form-label">Event Name</label>
+            <input type="text" class="form-control" name="name" value="{{ event.name }}" required>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" rows="3">{{ event.description }}</textarea>
+        </div>
+
+        <!-- Date & Time -->
+        <div class="datetime-grid">
+            <div class="form-group">
+                <label class="form-label">Start Date & Time</label>
+                <input type="datetime-local" class="form-control" name="start_date" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">End Date & Time</label>
+                <input type="datetime-local" class="form-control" name="end_date" required>
+            </div>
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
+            <label class="form-label">Location</label>
+            <input type="text" class="form-control" name="location" value="{{ event.location }}" required>
+        </div>
+
+        <!-- Category & Status -->
+        <div class="datetime-grid">
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-control" name="category">
+                    <option value="tech">Technology</option>
+                    <option value="music">Music</option>
+                    <option value="business">Business</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-control" name="status">
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="form-group">
+            <label class="form-label">Event Image</label>
+            <div class="file-upload">
+                <input type="file" id="event_image" name="event_image" accept="image/*" hidden>
+                <label for="event_image" class="d-block">
+                    <div class="mb-2">📁 Click to upload</div>
+                    <small class="text-muted">PNG or JPG (max 5MB)</small>
+                </label>
+                {% if event.event_image %}
+                <div class="mt-3">
+                    <img src="{{ event.event_image.url }}" class="img-fluid rounded" alt="Current image">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Create Event</button>
+    </form>
+</div>
+
+<script>
+
+    // Function to set the date and time for the datetime-local input
+    function setDateTimeInput(inputId, dateTimeString) {
+        const inputElement = document.getElementById(inputId);
+        if (inputElement && dateTimeString) {
+            // Parse the string, assuming it's in ISO format
+            const dt = new Date(dateTimeString);
+            // Format the date and time string for the datetime-local input
+            const formattedDateTime = dt.toISOString().slice(0, 16);  // YYYY-MM-DDTHH:mm
+            inputElement.value = formattedDateTime;
+        }
+    }
+
+    // Call the function for start_date and end_date
+    setDateTimeInput('start_date', "{{ event.start_date|date:'c' }}"); // Use 'c' for ISO 8601
+    setDateTimeInput('end_date', "{{ event.end_date|date:'c' }}");
+
+    // Add drag & drop file upload functionality
+    const fileUpload = document.querySelector('.file-upload');
+    const fileInput = document.getElementById('event_image');
+
+    fileUpload.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUpload.style.borderColor = '#667eea';
+        fileUpload.style.background = 'rgba(102, 126, 234, 0.1)';
+    });
+
+    fileUpload.addEventListener('dragleave', () => {
+        fileUpload.style.borderColor = '#cbd5e0';
+        fileUpload.style.background = 'transparent';
+    });
+
+    fileUpload.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileInput.files = e.dataTransfer.files;
+        fileUpload.style.borderColor = '#cbd5e0';
+        fileUpload.style.background = 'transparent';
+    });
+
+    // Simple file upload feedback
+    document.getElementById('event_image').addEventListener('change', function(e) {
+        const label = this.nextElementSibling;
+        if (this.files[0]) {
+            label.innerHTML = `
+                <div class="mb-2">✅ ${this.files[0].name}</div>
+                <small class="text-muted">Click to change file</small>
+            `;
+        }
+    });
+</script>
 {% endblock %}

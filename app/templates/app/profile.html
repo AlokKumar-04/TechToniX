@@ -20,11 +20,7 @@
                                     <i class="bi bi-person fs-1 text-white"></i>
                                 </div>
                             {% endif %}
-                            <label class="avatar-edit">
-                                <i class="bi bi-camera-fill"></i>
-                                <input type="file" class="d-none" name="profile_picture">
-                            </label>
-                        </div>
+                            </div>
                     </div>
                 </div>
                 <div class="card-body text-center pt-0">
@@ -79,12 +75,29 @@
                                     <div class="col-12">
                                         <div class="form-floating">
                                             <input type="email" class="form-control" name="email"
-                                                      id="email"  value="{{ user.email }}" required
-                                                      placeholder="name@example.com">
+                                                   id="email" value="{{ user.email }}" required
+                                                   placeholder="name@example.com">
                                             <label for="email">Email</label>
-                                             <div class="invalid-feedback">
+                                            <div class="invalid-feedback">
                                                 Please provide a valid email address
                                             </div>
+                                        </div>
+                                    </div>
+                                     <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" name="contact_number"
+                                                   id="contact_number" value="{{ user.contact_number }}"
+                                                   placeholder="XXX-XXX-XXXX">
+                                            <label for="contact_number">Contact Number</label>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" name="website"
+                                                   id="website" value="{{ user.website }}"
+                                                   placeholder="https://example.com">
+                                            <label for="website">Website</label>
                                         </div>
                                     </div>
 
@@ -98,6 +111,10 @@
                                               placeholder="Tell us about yourself">{{ user.bio }}</textarea>
                                     <label for="bio">Bio</label>
                                 </div>
+                            </div>
+                            <div class="col-12">
+                                <label for="profile_picture" class="form-label">Profile Picture</label>
+                                 <input class="form-control" type="file" id="profile_picture" name="profile_picture">
                             </div>
 
                             <div class="col-12">

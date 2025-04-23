@@ -11,7 +11,7 @@ class Category(models.Model):
     icon_class = models.CharField(max_length=50, help_text="CSS class for icons (e.g., 'bx bx-laptop')", null=True, blank=True)
 
     def __str__(self):
-        return dict(self.CATEGORY_CHOICES).get(self.name, self.name)  # Returns display label
+        return dict(self.CATEGORY_CHOICES).get(self.name, self.name)
 
 
 class Event(models.Model):
@@ -25,7 +25,8 @@ class Event(models.Model):
 
     name = models.CharField(max_length=255)
     description = models.TextField()
-    date = models.DateTimeField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     location = models.CharField(max_length=255)
     organizer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='organized_events')
     category = models.ForeignKey('event.Category', on_delete=models.SET_NULL, null=True, blank=True)
@@ -61,16 +62,17 @@ class Registration(models.Model):
         ('active', 'Active'),
         ('cancelled', 'Cancelled'),
         ('completed', 'Completed'),
+        ('held', 'Held'),
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='registrations')
     event = models.ForeignKey('event.Event', on_delete=models.CASCADE, related_name='registrations')
-    ticket = models.ForeignKey('event.Ticket', on_delete=models.SET_NULL, null=True, blank=True) # Link to the specific ticket purchased
+    ticket = models.ForeignKey('event.Ticket', on_delete=models.SET_NULL, null=True, blank=True)
     registration_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     is_checked_in = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('user', 'event', 'ticket') # Ensure a user can't register for the same ticket type for the same event multiple times
+        unique_together = ('user', 'event', 'ticket')
 
     def __str__(self):
         return f"{self.user} registered for {self.event.name} ({self.ticket.name if self.ticket else 'General Admission'}) - {self.get_status_display()}"

@@ -1,0 +1,11 @@
+{% extends 'management/base.html' %}
+
+{% block content %}
+    <h2>Delete Ticket</h2>
+    <p>Are you sure you want to delete the ticket "{{ ticket.name }}" for the event "{{ event.name }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        <a href="{% url 'event:list_tickets' event_id=event.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+{% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'app/base.html' %}
 {% load static %}
 
-{% block title %}{{ event.title }} - TechToniX{% endblock %}
+{% block title %}{{ event.name }} - TechToniX{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -9,15 +9,20 @@
         <div class="col-lg-10">
             <div class="card border-0 overflow-hidden shadow-lg" style="border-radius: 1.5rem;">
                 <div class="card-img-top position-relative overflow-hidden">
-                    <img src="{{ event.event_image.url }}" class="img-fluid w-100 hover-zoom" alt="{{ event.title }}" style="height: 400px; object-fit: cover;">
+                    {% if event.event_image %}
+                        <img src="{{ event.event_image.url }}" class="img-fluid w-100 hover-zoom" alt="{{ event.name }}" style="height: 400px; object-fit: cover;">
+                    {% else %}
+                         <div class="d-flex align-items-center justify-content-center bg-secondary" style="height: 400px;">
+                            <span class="text-white h1">No Image Available</span>
+                         </div>
+                    {% endif %}
                     <div class="position-absolute bottom-0 start-0 w-100 p-4 gradient-overlay">
-                        <h1 class="text-white display-5 fw-bold mb-3">{{ event.title }}</h1>
+                        <h1 class="text-white display-5 fw-bold mb-3">{{ event.name }}</h1>
                     </div>
                 </div>
                 
                 <div class="card-body p-5">
                     <div class="row g-4">
-                        <!-- Event Details -->
                         <div class="col-md-8">
                             <h3 class="mb-4 text-gradient-primary">Event Details</h3>
                             <div class="d-grid gap-3">
@@ -26,8 +31,17 @@
                                         <i class="bi bi-calendar-event text-white fs-5"></i>
                                     </div>
                                     <div>
-                                        <h5 class="mb-0">Date & Time</h5>
-                                        <p class="mb-0 text-muted">{{ event.date|date:"F j, Y" }} at {{ event.time|time:"g:i A" }}</p>
+                                        <h5 class="mb-0">Start Date & Time</h5>
+                                        <p class="mb-0 text-muted">{{ event.start_date|date:"F j, Y g:i A" }}</p>
+                                    </div>
+                                </div>
+                                 <div class="d-flex align-items-center">
+                                    <div class="icon-circle bg-primary me-3">
+                                        <i class="bi bi-calendar-event text-white fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">End Date & Time</h5>
+                                        <p class="mb-0 text-muted">{{ event.end_date|date:"F j, Y g:i A" }}</p>
                                     </div>
                                 </div>
 
@@ -41,6 +55,16 @@
                                     </div>
                                 </div>
 
+                                 <div class="d-flex align-items-center">
+                                    <div class="icon-circle bg-info me-3">
+                                        <i class="bi bi-tags text-white fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">Category</h5>
+                                        <p class="mb-0 text-muted">{{ event.category.name|default:"N/A" }}</p>
+                                    </div>
+                                </div>
+
                                 <div class="d-flex align-items-center">
                                     <div class="icon-circle bg-warning me-3">
                                         <i class="bi bi-person-badge text-white fs-5"></i>
@@ -49,7 +73,7 @@
                                         <h5 class="mb-0">Organizer</h5>
                                         <p class="mb-0 text-muted">
                                             {% if event.organizer %}
-                                                {{ event.organizer.username }}
+                                                {{ event.organizer.get_full_name }} ({{ event.organizer.username }})
                                             {% else %}
                                                 N/A
                                             {% endif %}
@@ -59,13 +83,31 @@
                             </div>
                         </div>
 
-                        <!-- Action Card -->
                         <div class="col-md-4">
                             <div class="bg-light p-4 rounded-3 shadow-sm">
                                 <h5 class="mb-3">Secure Your Spot</h5>
-                                <button class="btn btn-gradient-primary w-100 py-3 mb-3">
-                                    <i class="bi bi-ticket-perforated me-2"></i>Register Now
-                                </button>
+                                 {% if user.is_authenticated %}
+                                    <form method="post" action="{% url 'event:register_for_event' event.id %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="ticket_id" class="form-label">Select Ticket Type:</label>
+                                            <select class="form-select" id="ticket_id" name="ticket_id" required>
+                                                {% for ticket in event.tickets.all %}
+                                                    <option value="{{ ticket.id }}">
+                                                        {{ ticket.name }} - ${{ ticket.price }} ({{ ticket.quantity_available }} available)
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-gradient-primary w-100 py-3 mb-3">
+                                            <i class="bi bi-ticket-perforated me-2"></i>Register Now
+                                        </button>
+                                    </form>
+                                 {% else %}
+                                    <a href="{% url 'authentication:login' %}" class="btn btn-gradient-primary w-100 py-3 mb-3">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>Login to Register
+                                    </a>
+                                 {% endif %}
                                 <a href="{% url 'app:home' %}" class="btn btn-outline-secondary w-100">
                                     <i class="bi bi-arrow-left me-2"></i>All Events
                                 </a>
@@ -73,7 +115,6 @@
                         </div>
                     </div>
 
-                    <!-- Description Section -->
                     <div class="mt-5">
                         <h3 class="mb-4 text-gradient-primary">About the Event</h3>
                         <div class="lead text-muted lh-lg">

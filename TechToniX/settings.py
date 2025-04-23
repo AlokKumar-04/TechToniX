@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'rest_framework',
+    
     'authentication',
     'app',
     'event',
@@ -105,7 +105,7 @@ WSGI_APPLICATION = 'TechToniX.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'techtonix_db',
+        'NAME': 'techton',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost',  

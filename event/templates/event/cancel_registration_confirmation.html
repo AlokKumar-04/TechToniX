@@ -1,0 +1,54 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card border-warning">
+        <div class="card-header bg-warning text-white">
+            <h3 class="mb-0">
+                <i class="bx bx-error-circle"></i>
+                Confirm Registration Cancellation
+            </h3>
+        </div>
+        
+        <div class="card-body">
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">Are you sure you want to cancel this registration?</h4>
+                <p class="mb-0">This action cannot be undone. Any associated tickets will be released back to inventory.</p>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5>Event Details</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Event:</strong> {{ registration.event.name }}</li>
+                        <li><strong>Date:</strong> {{ registration.event.date|date:"M d, Y H:i" }}</li>
+                        <li><strong>Ticket Type:</strong> {{ registration.ticket.name|default:"General Admission" }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Registration Details</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Registered On:</strong> {{ registration.registration_date|date:"M d, Y H:i" }}</li>
+                        <li><strong>Status:</strong> <span class="badge bg-danger">{{ registration.get_status_display }}</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <form method="post" action="{% url 'cancel_registration' registration.id %}">
+                {% csrf_token %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                        <i class="bx bx-arrow-back"></i>
+                        Go Back
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bx bx-trash"></i>
+                        Confirm Cancellation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
